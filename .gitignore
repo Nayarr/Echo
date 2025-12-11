@@ -5,3 +5,6 @@ cmems_mod_glo_phy-so_anfc_0.083deg_P1M-m_so_180.00W-179.92E_80.00S-90.00N_0.49m_
 cmems_mod_glo_bgc-car_anfc_0.25deg_P1M-m_ph_180.00W-179.75E_80.00S-90.00N_0.49m_2024-10-01-2025-10-01.nc
 cmems_mod_glo_phy-thetao_anfc_0.083deg_P1M-m_thetao_180.00W-179.92E_80.00S-90.00N_0.49m_2024-10-01-2025-10-01.nc
 ScriptAPIV1.py
+stats_echo.py
+stats/ph_mensuel.json
+stats/ph_regression.json
