@@ -1,0 +1,15 @@
+thetao.json
+so.json
+ph.json
+cmems_mod_glo_phy-so_anfc_0.083deg_P1M-m_so_180.00W-179.92E_80.00S-90.00N_0.49m_2024-10-01-2025-10-01.nc
+cmems_mod_glo_bgc-car_anfc_0.25deg_P1M-m_ph_180.00W-179.75E_80.00S-90.00N_0.49m_2024-10-01-2025-10-01.nc
+cmems_mod_glo_phy-thetao_anfc_0.083deg_P1M-m_thetao_180.00W-179.92E_80.00S-90.00N_0.49m_2024-10-01-2025-10-01.nc
+ScriptAPIV1.py
+stats_echo.py
+stats/ph_mensuel.json
+stats/ph_regression.json
+Conversion_json.py
+cmems_mod_glo_phy_anfc_0.083deg_PT1H-m_thetao_93.08W-69.92W_59.75S-10.33N_0.49m_2025-12-21.nc
+cmems_mod_glo_phy_anfc_0.083deg_PT1H-m_thetao_106.58E-142.58E_8.75S-58.42N_0.49m_2025-12-21.nc
+cmems_mod_glo_phy_anfc_0.083deg_PT1H-m_thetao_142.50E-266.67E_60.25S-65.58N_0.49m_2025-12-21.nc
+points_latlon.json
