@@ -7,16 +7,14 @@ import os
 # --------------------------------------------------------
 DB_CONFIG = {
     "host": "localhost",
-    "port": 8889,
+    "port": 3306,
     "user": "root",
-    "password": "root",
+    "password": "",
     "database": "Echo",  # la BD doit exister avant
 }
 
 # Noms des fichiers JSON
-PH_JSON = "ph.json"
-SO_JSON = "so.json"
-THETAO_JSON = "thetao.json"
+POINTS = "points_latlon.json"
 
 
 # --------------------------------------------------------
@@ -72,69 +70,47 @@ def coord_key(lat, lon, ndigits=5):
 # --------------------------------------------------------
 # CREATION / RESET DES TABLES
 # --------------------------------------------------------
+def Index_create(cursor):
+    print("Création des index")
+
+    cursor.execute("""
+        DROP INDEX idx_lat_lon ON Points;
+    """)
+
+    cursor.execute("""
+        DROP INDEX idx_id_point ON Points;
+    """)
+
+    cursor.execute("""
+        CREATE INDEX idx_lat_lon ON Points(latitude, longitude);
+    """)
+
+    cursor.execute("""
+        CREATE INDEX idx_id_point ON Points(id_point);
+    """)
+    
+
 def reset_tables(cursor):
     print("Suppression des anciennes tables...")
-    cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
 
-    for table in ["thetao_valeurs", "so_valeurs", "ph_valeurs",
-                  "coord_so_thetao", "coord_ph"]:
-        cursor.execute(f"DROP TABLE IF EXISTS {table}")
-
-    cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+    cursor.execute(f"DROP TABLE IF EXISTS Points")
+    
     print("Tables supprimées.")
 
     print("Création des nouvelles tables...")
 
     cursor.execute("""
-        CREATE TABLE coord_ph (
-            id_coord INT AUTO_INCREMENT PRIMARY KEY,
-            latitude DOUBLE NOT NULL,
-            longitude DOUBLE NOT NULL,
-            UNIQUE KEY uniq_coord_ph (latitude, longitude)
+        CREATE TABLE Points (
+        id_point INT AUTO_INCREMENT PRIMARY KEY,
+        latitude DOUBLE NOT NULL,
+        longitude DOUBLE NOT NULL,
+        geom POINT NOT NULL,
+        UNIQUE KEY uniq_coord (latitude, longitude),
+        SPATIAL INDEX idx_geom (geom)
         ) ENGINE=InnoDB;
     """)
 
-    cursor.execute("""
-        CREATE TABLE ph_valeurs (
-            id_valeur INT AUTO_INCREMENT PRIMARY KEY,
-            id_coord INT NOT NULL,
-            time DATETIME NOT NULL,
-            ph_valeur FLOAT,
-            FOREIGN KEY (id_coord) REFERENCES coord_ph(id_coord)
-                ON DELETE CASCADE
-        ) ENGINE=InnoDB;
-    """)
-
-    cursor.execute("""
-        CREATE TABLE coord_so_thetao (
-            id_coord INT AUTO_INCREMENT PRIMARY KEY,
-            latitude DOUBLE NOT NULL,
-            longitude DOUBLE NOT NULL,
-            UNIQUE KEY uniq_coord_so_thetao (latitude, longitude)
-        ) ENGINE=InnoDB;
-    """)
-
-    cursor.execute("""
-        CREATE TABLE so_valeurs (
-            id_valeur INT AUTO_INCREMENT PRIMARY KEY,
-            id_coord INT NOT NULL,
-            time DATETIME NOT NULL,
-            so_valeur FLOAT,
-            FOREIGN KEY (id_coord) REFERENCES coord_so_thetao(id_coord)
-                ON DELETE CASCADE
-        ) ENGINE=InnoDB;
-    """)
-
-    cursor.execute("""
-        CREATE TABLE thetao_valeurs (
-            id_valeur INT AUTO_INCREMENT PRIMARY KEY,
-            id_coord INT NOT NULL,
-            time DATETIME NOT NULL,
-            thetao_valeur FLOAT,
-            FOREIGN KEY (id_coord) REFERENCES coord_so_thetao(id_coord)
-                ON DELETE CASCADE
-        ) ENGINE=InnoDB;
-    """)
+    
 
     print("Tables créées.")
 
@@ -142,170 +118,52 @@ def reset_tables(cursor):
 # --------------------------------------------------------
 # INSERTION PH : coord_ph + ph_valeurs
 # --------------------------------------------------------
-def insert_ph_data(cursor, ph_json):
-    if not os.path.exists(ph_json):
-        print(f"[PH] Fichier introuvable : {ph_json}")
+def insert_points_data(cursor, points_json):
+    if not os.path.exists(points_json):
+        print(f"[POINTS] Fichier introuvable : {points_json}")
         return
 
-    print(f"[PH] Insertion depuis {ph_json} ...")
+    print(f"[POINTS] Insertion depuis {points_json} ...")
 
-    coord_map = {}  # (lat, lon) -> id_coord
-    rows_buffer = []
-    buffer_size = 5000
+    buffer = []
+    buffer_size = 100000
     total = 0
 
-    for obj in stream_json_objects(ph_json):
+    for obj in stream_json_objects(points_json):
         lat = obj.get("latitude")
         lon = obj.get("longitude")
-        time = obj.get("time")
-        value = obj.get("ph")
 
-        k = coord_key(lat, lon)
-        if k is None or time is None:
+        if lat is None or lon is None:
             continue
 
-        if k not in coord_map:
-            cursor.execute(
-                "INSERT INTO coord_ph (latitude, longitude) VALUES (%s, %s)",
-                (k[0], k[1])
-            )
-            coord_id = cursor.lastrowid
-            coord_map[k] = coord_id
-        else:
-            coord_id = coord_map[k]
+        lat = float(lat)
+        lon = float(lon)
 
-        rows_buffer.append((coord_id, time, float(value) if value is not None else None))
+        # ⚠️ ordre IMPORTANT : POINT(longitude, latitude)
+        buffer.append((lat, lon, lon, lat))
         total += 1
 
-        if len(rows_buffer) >= buffer_size:
+        if len(buffer) >= buffer_size:
             cursor.executemany(
-                "INSERT INTO ph_valeurs (id_coord, time, ph_valeur) VALUES (%s, %s, %s)",
-                rows_buffer
+                """
+                INSERT IGNORE INTO Points (latitude, longitude, geom)
+                VALUES (%s, %s, POINT(%s, %s))
+                """,
+                buffer
             )
-            rows_buffer.clear()
-            print(f"[PH] {total} lignes insérées...")
+            buffer.clear()
+            print(f"[POINTS] {total} points traités...")
 
-    if rows_buffer:
+    if buffer:
         cursor.executemany(
-            "INSERT INTO ph_valeurs (id_coord, time, ph_valeur) VALUES (%s, %s, %s)",
-            rows_buffer
+            """
+            INSERT IGNORE INTO Points (latitude, longitude, geom)
+            VALUES (%s, %s, POINT(%s, %s))
+            """,
+            buffer
         )
 
-    print(f"[PH] Insertion terminée. Total lignes : {total}")
-
-
-# --------------------------------------------------------
-# INSERTION SO : coord_so_thetao + so_valeurs
-# --------------------------------------------------------
-def insert_so_data(cursor, so_json):
-    if not os.path.exists(so_json):
-        print(f"[SO] Fichier introuvable : {so_json}")
-        return
-
-    print(f"[SO] Insertion depuis {so_json} ...")
-
-    coord_map = {}  # (lat, lon) -> id_coord
-    rows_buffer = []
-    buffer_size = 5000
-    total = 0
-
-    for obj in stream_json_objects(so_json):
-        lat = obj.get("latitude")
-        lon = obj.get("longitude")
-        time = obj.get("time")
-        value = obj.get("so")
-
-        k = coord_key(lat, lon)
-        if k is None or time is None:
-            continue
-
-        if k not in coord_map:
-            cursor.execute(
-                "INSERT INTO coord_so_thetao (latitude, longitude) VALUES (%s, %s)",
-                (k[0], k[1])
-            )
-            coord_id = cursor.lastrowid
-            coord_map[k] = coord_id
-        else:
-            coord_id = coord_map[k]
-
-        rows_buffer.append((coord_id, time, float(value) if value is not None else None))
-        total += 1
-
-        if len(rows_buffer) >= buffer_size:
-            cursor.executemany(
-                "INSERT INTO so_valeurs (id_coord, time, so_valeur) VALUES (%s, %s, %s)",
-                rows_buffer
-            )
-            rows_buffer.clear()
-            print(f"[SO] {total} lignes insérées...")
-
-    if rows_buffer:
-        cursor.executemany(
-            "INSERT INTO so_valeurs (id_coord, time, so_valeur) VALUES (%s, %s, %s)",
-            rows_buffer
-        )
-
-    print(f"[SO] Insertion terminée. Total lignes : {total}")
-    return coord_map  # à réutiliser pour thetao
-
-
-# --------------------------------------------------------
-# INSERTION THETAO : thetao_valeurs (en réutilisant coord_so_thetao)
-# --------------------------------------------------------
-def insert_thetao_data(cursor, thetao_json, coord_map):
-    if not os.path.exists(thetao_json):
-        print(f"[THETAO] Fichier introuvable : {thetao_json}")
-        return
-
-    if coord_map is None:
-        print("[THETAO] Pas de grille coord_so_thetao fournie, abandon.")
-        return
-
-    print(f"[THETAO] Insertion depuis {thetao_json} ...")
-
-    rows_buffer = []
-    buffer_size = 5000
-    total = 0
-
-    for obj in stream_json_objects(thetao_json):
-        lat = obj.get("latitude")
-        lon = obj.get("longitude")
-        time = obj.get("time")
-        value = obj.get("thetao")
-
-        k = coord_key(lat, lon)
-        if k is None or time is None:
-            continue
-
-        coord_id = coord_map.get(k)
-        if coord_id is None:
-            # en théorie ne doit pas arriver si les grilles sont identiques
-            cursor.execute(
-                "INSERT INTO coord_so_thetao (latitude, longitude) VALUES (%s, %s)",
-                (k[0], k[1])
-            )
-            coord_id = cursor.lastrowid
-            coord_map[k] = coord_id
-
-        rows_buffer.append((coord_id, time, float(value) if value is not None else None))
-        total += 1
-
-        if len(rows_buffer) >= buffer_size:
-            cursor.executemany(
-                "INSERT INTO thetao_valeurs (id_coord, time, thetao_valeur) VALUES (%s, %s, %s)",
-                rows_buffer
-            )
-            rows_buffer.clear()
-            print(f"[THETAO] {total} lignes insérées...")
-
-    if rows_buffer:
-        cursor.executemany(
-            "INSERT INTO thetao_valeurs (id_coord, time, thetao_valeur) VALUES (%s, %s, %s)",
-            rows_buffer
-        )
-
-    print(f"[THETAO] Insertion terminée. Total lignes : {total}")
+    print(f"[POINTS] Insertion terminée. Total points traités : {total}")
 
 
 # --------------------------------------------------------
@@ -320,14 +178,12 @@ def main():
         reset_tables(cursor)
         conn.commit()
 
-        insert_ph_data(cursor, PH_JSON)
+        insert_points_data(cursor, POINTS)
         conn.commit()
 
-        coord_map_so = insert_so_data(cursor, SO_JSON)
+        Index_create(cursor)
         conn.commit()
 
-        insert_thetao_data(cursor, THETAO_JSON, coord_map_so)
-        conn.commit()
 
         print("\n✅ Import terminé avec succès.")
     finally:

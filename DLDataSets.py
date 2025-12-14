@@ -1,50 +1,52 @@
 import os
 import copernicusmarine
 
-if os.path.exists("cmems_mod_glo_bgc-car_anfc_0.25deg_P1M-m_ph_180.00W-179.75E_80.00S-90.00N_0.49m_2023-10-01-2025-10-01.nc"):
-    os.remove("cmems_mod_glo_bgc-car_anfc_0.25deg_P1M-m_ph_180.00W-179.75E_80.00S-90.00N_0.49m_2023-10-01-2025-10-01.nc")
-    
-if os.path.exists("cmems_mod_glo_phy-so_anfc_0.083deg_P1M-m_so_180.00W-179.92E_80.00S-90.00N_0.49m_2023-06-01-2025-10-01.nc"):
-    os.remove("cmems_mod_glo_phy-so_anfc_0.083deg_P1M-m_so_180.00W-179.92E_80.00S-90.00N_0.49m_2023-06-01-2025-10-01.nc")
+fichier1 = "cmems_mod_glo_phy_anfc_0.083deg_PT1H-m_thetao_93.08W-69.92W_59.75S-10.33N_0.49m_2025-12-21.nc"
+fichier2 = "cmems_mod_glo_phy_anfc_0.083deg_PT1H-m_thetao_106.58E-142.58E_8.75S-58.42N_0.49m_2025-12-21.nc"
+fichier3 = "cmems_mod_glo_phy_anfc_0.083deg_PT1H-m_thetao_142.50E-266.67E_60.25S-65.58N_0.49m_2025-12-21.nc"
 
-if os.path.exists("cmems_mod_glo_phy-thetao_anfc_0.083deg_P1M-m_thetao_180.00W-179.92E_80.00S-90.00N_0.49m_2023-06-01-2025-10-01.nc"):
-    os.remove("cmems_mod_glo_phy-thetao_anfc_0.083deg_P1M-m_thetao_180.00W-179.92E_80.00S-90.00N_0.49m_2023-06-01-2025-10-01.nc")
-
-copernicusmarine.subset(
-  dataset_id="cmems_mod_glo_bgc-car_anfc_0.25deg_P1M-m",
-  variables=["ph"],
-  minimum_longitude=-180,
-  maximum_longitude=179.75,
-  minimum_latitude=-80,
-  maximum_latitude=90,
-  start_datetime="2024-10-01T00:00:00",
-  end_datetime="2025-10-01T00:00:00",
-  minimum_depth=0.4940253794193268,
-  maximum_depth=0.4940253794193268,
-)
+if os.path.exists(fichier1):
+    os.remove(fichier1)
+if os.path.exists(fichier2):
+    os.remove(fichier2)
+if os.path.exists(fichier3):
+    os.remove(fichier3)
 
 copernicusmarine.subset(
-  dataset_id="cmems_mod_glo_phy-so_anfc_0.083deg_P1M-m",
-  variables=["so"],
-  minimum_longitude=-180,
-  maximum_longitude=179.91668701171875,
-  minimum_latitude=-80,
-  maximum_latitude=90,
-  start_datetime="2024-10-01T00:00:00",
-  end_datetime="2025-10-01T00:00:00",
+  dataset_id="cmems_mod_glo_phy_anfc_0.083deg_PT1H-m",
+  variables=["thetao"],
+  minimum_longitude=142.4880974729829,
+  maximum_longitude=266.6721928620632,
+  minimum_latitude=-60.31982357735927,
+  maximum_latitude=65.59385531296171,
+  start_datetime="2025-12-21T23:00:00",
+  end_datetime="2025-12-21T23:00:00",
   minimum_depth=0.49402499198913574,
   maximum_depth=0.49402499198913574,
 )
 
 copernicusmarine.subset(
-  dataset_id="cmems_mod_glo_phy-thetao_anfc_0.083deg_P1M-m",
+  dataset_id="cmems_mod_glo_phy_anfc_0.083deg_PT1H-m",
   variables=["thetao"],
-  minimum_longitude=-180,
-  maximum_longitude=179.91668701171875,
-  minimum_latitude=-80,
-  maximum_latitude=90,
-  start_datetime="2024-10-01T00:00:00",
-  end_datetime="2025-10-01T00:00:00",
+  minimum_longitude=106.57168145214833,
+  maximum_longitude=142.60998193218467,
+  minimum_latitude=-8.750556987573532,
+  maximum_latitude=58.445857449160876,
+  start_datetime="2025-12-21T23:00:00",
+  end_datetime="2025-12-21T23:00:00",
+  minimum_depth=0.49402499198913574,
+  maximum_depth=0.49402499198913574,
+)
+
+copernicusmarine.subset(
+  dataset_id="cmems_mod_glo_phy_anfc_0.083deg_PT1H-m",
+  variables=["thetao"],
+  minimum_longitude=-93.13296120435672,
+  maximum_longitude=-69.85822547766662,
+  minimum_latitude=-59.80481600095835,
+  maximum_latitude=10.394790142445771,
+  start_datetime="2025-12-21T23:00:00",
+  end_datetime="2025-12-21T23:00:00",
   minimum_depth=0.49402499198913574,
   maximum_depth=0.49402499198913574,
 )
