@@ -75,27 +75,53 @@ class PointRepository extends AbstractRepository
     }
 
 
-   public function selectLOD(int $step, int $limit): array
+     public function findNearestPoint(float $lat, float $lon, float $radiusKm = 50): ?array
     {
         $pdo = DatabaseConnection::getPdo();
 
+        // Haversine formula to find nearest point within radius
         $sql = "
-            SELECT id_point, latitude, longitude
+            SELECT
+                id_point,
+                latitude,
+                longitude,
+                (
+                  6371 * acos(
+                    cos(radians(:lat))
+                    * cos(radians(latitude))
+                    * cos(radians(longitude) - radians(:lon))
+                    + sin(radians(:lat)) * sin(radians(latitude))
+                  )
+                ) AS distance
             FROM Points
-            WHERE MOD(id_point, :step) = 0
-            LIMIT :limit
+            WHERE (
+                  6371 * acos(
+                    cos(radians(:lat))
+                    * cos(radians(latitude))
+                    * cos(radians(longitude) - radians(:lon))
+                    + sin(radians(:lat)) * sin(radians(latitude))
+                  )
+                ) <= :radius
+            ORDER BY distance ASC
+            LIMIT 1
         ";
 
         $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(":step", $step, PDO::PARAM_INT);
-        $stmt->bindValue(":limit", $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':lat', $lat);
+        $stmt->bindValue(':lon', $lon);
+        $stmt->bindValue(':radius', $radiusKm);
         $stmt->execute();
 
-        $results = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $results[] = $row;
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            // Ensure distance is a float
+            $row['distance'] = floatval($row['distance']);
+            $row['latitude'] = floatval($row['latitude']);
+            $row['longitude'] = floatval($row['longitude']);
         }
 
-        return $results;
+        return $row ?: null;
     }
+
 }

@@ -32,39 +32,29 @@ class controllerPoint
         require __DIR__ . "/../view/$cheminVue";
     }
 
-    public static function carte() {
-        ControllerPoint::afficheVue("point/view.php", [
-            "pagetitle" => "Carte",
+    public static function carte(): void {
+        ControllerPoint::afficheVue('point/view.php', [
+            "pagetitle" => "Carte des points",
             "cheminVueBody" => "carte.php"
         ]);
     }
 
 
-    public static function apiPoints(): void
+    public static function apiNearestPoint(): void
     {
         header("Content-Type: application/json");
 
-        $zoom = isset($_GET["zoom"]) ? intval($_GET["zoom"]) : 2;
-
-        // LOD simple
-        $step = 500;
-        if ($zoom >= 4) $step = 100;
-        if ($zoom >= 6) $step = 20;
-        if ($zoom >= 8) $step = 1;
-
-        // limite de sécurité
-        $limit = 200000;
+        $lat = floatval($_GET["lat"] ?? 0);
+        $lon = floatval($_GET["lon"] ?? 0);
+        $radius = floatval($_GET["radius"] ?? 8);
 
         $repo = new PointRepository();
-        $points = $repo->selectLOD($step, $limit);
+        $point = $repo->findNearestPoint($lat, $lon, $radius);
 
-        echo json_encode($points);
+        echo json_encode($point);
     }
 
-
-
-
-
+    
 }
 
 ?>
