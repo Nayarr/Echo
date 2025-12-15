@@ -24,7 +24,7 @@
     ?>
 </main>
 <footer>
-    <p>Site de covoiturage de RAYAN</p>
+    <p>Echo </p>
 </footer>
 </body>
 </html>
