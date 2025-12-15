@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -30,6 +32,13 @@ if (class_exists($controllerClassName)) {
     if (in_array($action, get_class_methods($controllerClassName))) {
         $controller = new $controllerClassName();
         $controller->$action();
+    } else {
+        // L'action n'existe pas
+        require __DIR__ . '/../src/view/error.php'; // Ou un echo "Erreur 404";
     }
+} else {
+    // Le contrôleur n'existe pas
+    require __DIR__ . '/../src/view/error.php'; // Ou un echo "Erreur 404";
 }
 
+?>
