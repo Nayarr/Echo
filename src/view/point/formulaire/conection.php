@@ -20,7 +20,7 @@
 
                     <input type="submit" value="Sign in" />
                 </p>
-                <p> Vous n'avez pas de compte? <a href="incription.php">Inscrivez-vous</a></p>
+                <p> Vous n'avez pas de compte? <a href="inscription.php">Inscrivez-vous</a></p>
 
             </fieldset>
         </form>

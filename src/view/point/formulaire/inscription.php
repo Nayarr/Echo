@@ -5,7 +5,7 @@
         <form method="GET" action="../web/frontController.php">
             <fieldset>
 
-                <legend>Bienvenu!</legend>
+                <legend>Bienvenue!</legend>
                 <p>
                     
                     <label for="Prenom_id">Prenom</label> :
