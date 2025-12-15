@@ -82,7 +82,7 @@
 
     <p>
         Ce projet est réalisé par une équipe de 6 étudiants de l'UPEC (IUT Sénart-Fontainebleau) :<br>
-        Rayan Oughlis, Chem'S-Edin Kamboua,  Adam Rakibi, Hanah Sahmoune, et Yoni Vaysse.
+        Rayan Oughlis, Chem'S-Edin Kamboua, Abel Kienast, Adam Rakibi, Hanah Sahmoune, et Yoni Vaysse.
     </p>
 
     <p>
