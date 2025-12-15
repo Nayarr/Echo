@@ -1,0 +1,243 @@
+body {
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    text-align: center;
+    background-color: #eaeaea;
+    color: #222;
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    border: 1px solid #ffffff;
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+h1, h2, h3 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+a {
+    color: #8a2eff;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+p {
+    margin: 0;
+}
+
+nav {
+    width: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+/* --- Conteneur principal --- */
+.container {
+    height: 210px;
+    max-width: 800px;
+    margin: 10px auto;
+    background: white;
+    padding: 3px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+}
+
+.container_traj{
+    height: 410px;
+    max-width: 800px;
+    margin: 10px auto;
+    background: white;
+    padding: 3px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+}
+
+.voitureimg img {
+    width: 275px;
+    border-radius: 15Px;
+}
+
+.userimg img {
+    width: 215px;
+    border-radius: 15Px;
+}
+
+.infogeneral {
+    width: 100%;
+}
+
+.v {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+/* Modifier*/
+.btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 130px;
+    height: 40px;
+    font-size: 1.1em;
+    cursor: pointer;
+    background-color: #171717;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    transition: all .4s;
+}
+
+.btn:hover {
+    border-radius: 5px;
+    transform: translateY(-10px);
+    box-shadow: 0 7px 0 -2px #a659f8,
+    0 15px 0 -4px #ff84fb,
+    0 16px 10px -3px #ff84fb;
+}
+
+.btn:active {
+    transition: all 0.2s;
+    transform: translateY(-5px);
+    box-shadow: 0 2px 0 -2px #a659f8,
+    0 8px 0 -4px #ff84fb,
+    0 12px 10px -3px #ff84fb;
+}
+
+
+/* Supprimer */
+.suppr {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: rgb(20, 20, 20);
+    border: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+    cursor: pointer;
+    transition-duration: .3s;
+    overflow: hidden;
+    position: relative;
+}
+
+.svgIcon {
+    width: 12px;
+    transition-duration: .3s;
+}
+
+.svgIcon path {
+    fill: white;
+}
+
+.suppr:hover {
+    width: 140px;
+    border-radius: 50px;
+    transition-duration: .3s;
+    background-color: rgb(255, 69, 69);
+    align-items: center;
+}
+
+.suppr:hover .svgIcon {
+    width: 50px;
+    transition-duration: .3s;
+    transform: translateY(60%);
+}
+
+.suppr::before {
+    position: absolute;
+    top: -20px;
+    content: "Delete";
+    color: white;
+    transition-duration: .3s;
+    font-size: 2px;
+}
+
+.suppr:hover::before {
+    font-size: 13px;
+    opacity: 1;
+    transform: translateY(30px);
+    transition-duration: .3s;
+}
+
+.detail {
+    margin: 40px;
+}
+
+/* --- Boutons et formulaires --- */
+input[type="text"],
+input[type="number"] {
+    width: 98%;
+    padding: 4px;
+    margin-top: 4px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+input[type="submit"], button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+input[type="submit"]:hover, button:hover {
+    background-color: #0056b3;
+}
+
+fieldset {
+    margin-top: 20px;
+}
+
+/* --- Table et liste --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* --- Messages d’erreur / succès --- */
+.error {
+    color: #b30000;
+    background: #ffe0e0;
+    border: 1px solid #b30000;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.success {
+    color: #155724;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    padding: 10px;
+    border-radius: 5px;
+}
