@@ -32,6 +32,13 @@ class controllerPoint
         require __DIR__ . "/../view/$cheminVue";
     }
 
+    public static function accueil(): void {
+        ControllerPoint::afficheVue('accueil/view.php', [
+            "pagetitle" => "Accueil",
+            "cheminVueBody" => "index.html"
+        ]);
+    }
+
     public static function carte(): void {
         ControllerPoint::afficheVue('point/view.php', [
             "pagetitle" => "Carte des points",
