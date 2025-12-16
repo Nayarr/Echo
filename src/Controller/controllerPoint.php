@@ -53,8 +53,7 @@ class controllerPoint
 
         echo json_encode($point);
     }
-
-    
+   
 }
 
 ?>
