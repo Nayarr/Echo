@@ -241,3 +241,47 @@ tr:hover {
     padding: 10px;
     border-radius: 5px;
 }
+
+/*Session*/
+
+/* Message d'erreur affiché dans les formulaires */
+.error-message {
+    color: #721c24;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin: 10px auto;
+    max-width: 600px;
+    text-align: left;
+}
+
+/* Styles basiques pour formulaires */
+form {
+    max-width: 600px;
+    margin: 12px auto;
+    text-align: left;
+}
+
+label {
+    font-weight: 600;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+select {
+    width: 100%;
+    padding: 8px;
+    margin: 6px 0 12px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+fieldset {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+}
