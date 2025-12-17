@@ -73,21 +73,10 @@ def coord_key(lat, lon, ndigits=5):
 def Index_create(cursor):
     print("Création des index")
 
-    cursor.execute("""
-        DROP INDEX idx_lat_lon ON Points;
-    """)
+    cursor.execute("CREATE INDEX idx_lat_lon ON Points(latitude, longitude);")
+    cursor.execute("CREATE INDEX idx_id_point ON Points(id_point);")
 
-    cursor.execute("""
-        DROP INDEX idx_id_point ON Points;
-    """)
 
-    cursor.execute("""
-        CREATE INDEX idx_lat_lon ON Points(latitude, longitude);
-    """)
-
-    cursor.execute("""
-        CREATE INDEX idx_id_point ON Points(id_point);
-    """)
     
 
 def reset_tables(cursor):
@@ -185,7 +174,7 @@ def main():
         conn.commit()
 
 
-        print("\n✅ Import terminé avec succès.")
+        print("\n[OK] Import terminé avec succès.")
     finally:
         cursor.close()
         conn.close()
