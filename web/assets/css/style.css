@@ -6,11 +6,11 @@ body {
 }
 
 .background {
-    position: fixed;
+    position: absolute;
     top: -59px;
     left: -190px;
     width: 122%;
-    height: 100%;
+    height: 800%;
     background-image: url(../img/BG.png);
     background-size: 100%;
     background-position: top;
@@ -77,6 +77,71 @@ h3 {
     font-size: 2em;
 }
 
+/* Footer*/
+
+.footer_conteneur {
+    border: 1px solid rgba(0, 0, 0, 0.45);
+    background-color: rgba(0, 0, 0, 0.45);
+    border-radius: 15px;
+    filter: drop-shadow(0 0 0.75rem black);
+    width: 70%;
+    margin-top: 12em;
+}
+
+.footer_haut {
+    display: flex;
+    justify-content: space-between;
+    padding: 30px 50px 0px 50px;
+}
+
+/*Gauche*/
+
+.footer_gauche {
+    text-align: left;
+    width: 35%;
+}
+
+.footer_gauche img {
+    width: 60px;
+}
+
+.footer_gauche p {
+    color : white;
+}
+
+.footer_gauche .footer_logo img {
+    width: 30px;
+    margin-right: 10px;
+}
+
+/*Droite*/
+
+.footer_droit {
+    display: flex;
+    justify-content: space-around;
+    width: 45%;
+}
+
+.footer_column {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer_column a, p {
+    margin: 0;
+    color: #BEBEBE;
+    text-decoration: none;
+    margin-bottom: 8px;
+}
+
+.footer_column h5 {
+    margin: 0;
+    color: white;
+    text-decoration: none;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+}
+
 /* --- Accueil boutons --- */
 
 .accueilbtn {
@@ -84,6 +149,10 @@ h3 {
     justify-content: center;
     gap: 20px;
     margin-top: 40px;
+}
+
+.accueilbtn a {
+    margin: 0;
 }
 
 .accueilbtn .signin {
@@ -106,8 +175,78 @@ h3 {
     width: 4%;
 }
 
+.vagues {
+    position: absolute;
+    margin-top: 2%;
+    width: 100vw;
+    height: 100vh; /* ← plein écran */
+    z-index: -1;
+}
+
+.wave-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Page de textes*/
+
+.page1 {
+    height: 65vh;
+}
+
+.bulles {
+    position: absolute;
+    top: 695px;
+    width: 100%;
+    height: 269%;
+    background-image: url(../img/bulle2.png);
+    background-size: 100%;
+    background-position: top;
+    z-index: -1;
+}
+
+.conteneur{
+    display: flex;
+    justify-content: center;
+
+}
+
+.boite_texte {
+    border: 1px solid rgba(117, 178, 255, 0.74);
+    background-color: rgba(117, 178, 255, 0.44);
+    border-radius: 15px;
+    filter: drop-shadow(0 0 0.75rem black);
+    width: 81%;
+}
+
+#intro, #pourquoi, #donnees, #transparence, #equipe {
+    color: white;
+    text-align: left;
+    padding: 15px 200px 15px 200px;
+}
+
+#intro h3{
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    text-align: left;
+    font-size: 3em;
+    font-weight: bold;
+    width: 60%;
+}
+
+#pourquoi h4, #donnees h4, #transparence h4, #equipe h4 {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    text-align: left;
+    font-size: 2em;
+    font-weight: bold;
+    width: 60%;
+}
+
+
 p {
-    margin: 0;
+    margin-bottom: 25px;
 }
 
 nav {

@@ -35,7 +35,7 @@ class controllerPoint
     public static function accueil(): void {
         ControllerPoint::afficheVue('accueil/view.php', [
             "pagetitle" => "Accueil",
-            "cheminVueBody" => "index.html"
+            "cheminVueBody" => "index.php"
         ]);
     }
 
