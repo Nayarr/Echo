@@ -127,7 +127,7 @@ h3 {
     flex-direction: column;
 }
 
-.footer_column a, p {
+.footer_column a {
     margin: 0;
     color: #BEBEBE;
     text-decoration: none;
@@ -247,6 +247,7 @@ h3 {
 
 p {
     margin-bottom: 25px;
+    color: white;
 }
 
 nav {
