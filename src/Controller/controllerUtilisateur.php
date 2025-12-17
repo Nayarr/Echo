@@ -78,11 +78,14 @@ class controllerUtilisateur
         try {
             $repo->create($user);
         } catch (\Exception $e) {
-            // En cas d'erreur SQL (ex : contrainte), afficher un message générique
+            // En cas d'erreur SQL (ex : contrainte), afficher un message
+            // ATTENTION: affichage temporaire pour debug — retirer en production
+            $msg = "Erreur lors de l'enregistrement de votre compte. Veuillez réessayer plus tard.";
+            $msgDetail = $e->getMessage();
             controllerUtilisateur::afficheVue('point/view.php', [
                 "pagetitle" => "Inscription",
                 "cheminVueBody" => "inscription.php",
-                "error" => "Erreur lors de l'enregistrement de votre compte. Veuillez réessayer plus tard."
+                "error" => $msg . ' (' . $msgDetail . ')'
             ]);
             return;
         }
