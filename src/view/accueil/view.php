@@ -18,13 +18,10 @@
         <a href="<?= $baseURL ?>?action=readAll&controller=trajet" class="signup">Sign Up</a>
     </nav>
 </header>
-<main <?php echo ($pagetitle === "Carte des points") ? 'class="carte-view"' : ''; ?>>
-
     <?php
     require __DIR__ . "/{$cheminVueBody}";
     ?>
 </main>
-
 <footer>
     <div class="conteneur">
         <div class="footer_conteneur">
@@ -74,4 +71,3 @@
 </footer>
 </body>
 </html>
-

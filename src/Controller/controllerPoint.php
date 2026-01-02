@@ -32,6 +32,13 @@ class controllerPoint
         require __DIR__ . "/../view/$cheminVue";
     }
 
+    public static function accueil(): void {
+        ControllerPoint::afficheVue('accueil/view.php', [
+            "pagetitle" => "Accueil",
+            "cheminVueBody" => "index.php"
+        ]);
+    }
+
     public static function carte(): void {
         ControllerPoint::afficheVue('point/view.php', [
             "pagetitle" => "Carte des points",
@@ -42,19 +49,51 @@ class controllerPoint
 
     public static function apiNearestPoint(): void
     {
-        header("Content-Type: application/json");
+        // Empêche l'affichage accidentel (warnings, notices) en tamponnant la sortie
+        if (function_exists('ob_start')) {
+            ob_start();
+        }
+
+        header("Content-Type: application/json; charset=utf-8");
 
         $lat = floatval($_GET["lat"] ?? 0);
         $lon = floatval($_GET["lon"] ?? 0);
         $radius = floatval($_GET["radius"] ?? 8);
 
-        $repo = new PointRepository();
-        $point = $repo->findNearestPoint($lat, $lon, $radius);
+        try {
+            $repo = new PointRepository();
+            $point = $repo->findNearestPoint($lat, $lon, $radius);
 
-        echo json_encode($point);
+            // Vider le tampon de sortie (warnings, etc.) avant d'envoyer le JSON
+            if (function_exists('ob_get_clean')) {
+                ob_get_clean();
+            }
+
+            echo json_encode($point);
+        } catch (\Throwable $e) {
+            if (function_exists('ob_get_clean')) {
+                ob_get_clean();
+            }
+
+            // S'assure que le dossier de logs existe
+            $logDir = __DIR__ . '/../../var/log';
+            if (!is_dir($logDir)) {
+                @mkdir($logDir, 0755, true);
+            }
+
+            // Écrit les détails de l'erreur dans le journal pour le débogage
+            $logFile = $logDir . '/api_errors.log';
+            $now = date('Y-m-d H:i:s');
+            $msg = "[$now] action=apiNearestPoint ";
+            $msg .= 'lat=' . ($lat ?? 'n/a') . ' lon=' . ($lon ?? 'n/a') . ' radius=' . ($radius ?? 'n/a') . "\n";
+            $msg .= "Error: " . $e->getMessage() . "\n";
+            $msg .= $e->getTraceAsString() . "\n\n";
+            @file_put_contents($logFile, $msg, FILE_APPEND);
+
+            http_response_code(500);
+            echo json_encode(["error" => "Internal Server Error"]);
+        }
     }
 
     
 }
-
-?>

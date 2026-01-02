@@ -1,42 +1,311 @@
 body {
     font-family: "Segoe UI", Roboto, Arial, sans-serif;
     text-align: center;
-    background-color: #eaeaea;
     color: #222;
     margin: 0;
-    padding: 20px;
+}
+
+.background {
+    position: absolute;
+    top: -59px;
+    left: -190px;
+    width: 122%;
+    height: 407%;
+    background-image: url(../img/BG.png);
+    background-size: 100%;
+    background-position: top;
+    z-index: -1;
+    filter: blur(100px);
 }
 
 header {
-    border: 1px solid #ffffff;
-    background-color: #ffffff;
-    border-radius: 15px;
-    padding: 10px;
+    border: 1px solid #020D20;
+    background-color: #020D20;
+    padding: 12px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
 }
 
-h1, h2, h3 {
-    color: #333;
-    text-align: center;
-    margin-bottom: 1em;
+header img {
+    width: 65px;
+
 }
 
 a {
-    color: #8a2eff;
-    text-decoration: none;
-    transition: color 0.2s;
+    margin-right: 55px;
 }
 
-p {
+.homebtn {
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    background-color: #2C2C2C;
+    padding: 7px 18px 7px 18px;
+}
+
+.signin {
+    color: #1E1E1E;
+    text-decoration: none;
+    border-radius: 5px;
+    border: 1px solid #767676;
+    background-color: white;
+    padding: 7px 18px 7px 18px;
+}
+
+.signup {
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    border: 1px solid white;
+    background-color: #0091FF;
+    padding: 7px 18px 7px 18px;
+}
+
+
+h1 {
+    color: white;
+    text-align: center;
+    font-size: 5em;
     margin: 0;
+    margin-top: 200px;
+}
+
+h3 {
+    color: white;
+    font-weight: normal;
+    text-align: center;
+    font-size: 2em;
+}
+
+/* Footer*/
+
+.footer_conteneur {
+    border: 1px solid rgba(0, 0, 0, 0.45);
+    background-color: rgba(0, 0, 0, 0.45);
+    border-radius: 15px;
+    filter: drop-shadow(0 0 0.75rem black);
+    width: 70%;
+    margin-top: 12em;
+}
+
+.footer_haut {
+    display: flex;
+    justify-content: space-between;
+    padding: 30px 50px 0px 50px;
+}
+
+/*Gauche*/
+
+.footer_gauche {
+    text-align: left;
+    width: 35%;
+}
+
+.footer_gauche img {
+    width: 60px;
+}
+
+.footer_gauche p {
+    color : white;
+}
+
+.footer_gauche .footer_logo img {
+    width: 30px;
+    margin-right: 10px;
+}
+
+/*Droite*/
+
+.footer_droit {
+    display: flex;
+    justify-content: space-around;
+    width: 45%;
+}
+
+.footer_column {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer_column a {
+    margin: 0;
+    color: #BEBEBE;
+    text-decoration: none;
+    margin-bottom: 8px;
+}
+
+.footer_column h5 {
+    margin: 0;
+    color: white;
+    text-decoration: none;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+}
+
+/* --- Accueil boutons --- */
+
+.accueilbtn {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.accueilbtn a {
+    margin: 0;
+}
+
+.accueilbtn .signin {
+    color: #1E1E1E;
+    text-decoration: none;
+    border-radius: 5px;
+    border: 1px solid #767676;
+    background-color: white;
+    padding: 7px 18px 7px 18px;
+    width: 4%;
+}
+
+.accueilbtn .signup {
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    border: 1px solid white;
+    background-color: #0091FF;
+    padding: 7px 18px 7px 18px;
+    width: 4%;
+}
+
+.vagues {
+    position: absolute;
+    margin-top: 2%;
+    width: 100vw;
+    height: 100vh; /* ← plein écran */
+    z-index: -1;
+}
+
+.wave-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Page de textes*/
+
+.page1 {
+    height: 65vh;
+}
+
+.bulles {
+    position: absolute;
+    top: 695px;
+    width: 100%;
+    height: 269%;
+    background-image: url(../img/bulle2.png);
+    background-size: 100%;
+    background-position: top;
+    z-index: -1;
+}
+
+.conteneur{
+    display: flex;
+    justify-content: center;
+
+}
+
+.boite_texte {
+    border: 1px solid rgba(117, 178, 255, 0.74);
+    background-color: rgba(117, 178, 255, 0.44);
+    border-radius: 15px;
+    filter: drop-shadow(0 0 0.75rem black);
+    width: 81%;
+}
+
+#intro, #pourquoi, #donnees, #transparence, #equipe {
+    color: white;
+    text-align: left;
+    padding: 15px 200px 15px 200px;
+}
+
+#intro h3{
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    text-align: left;
+    font-size: 3em;
+    font-weight: bold;
+    width: 60%;
+}
+
+#pourquoi h4, #donnees h4, #transparence h4, #equipe h4 {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    text-align: left;
+    font-size: 2em;
+    font-weight: bold;
+    width: 60%;
+}
+
+
+p {
+    margin-bottom: 25px;
+    color: white;
 }
 
 nav {
     width: 40%;
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: flex-end;
+}
+
+/* --- Carte php style--- */
+
+main.carte-view {
+  margin: 0;
+  padding: 0;
+  height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  border: 2px solid rgba(0,255,0,0.6);
+}
+
+/* Popup styling: anthracite background with white text */
+.maplibregl-popup-content {
+  background: #2b2b2b !important;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+  padding: 8px 10px !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45) !important;
+}
+
+.maplibregl-popup-content strong {
+  color: #ffffff !important;
+}
+
+/* Popup tip (the little triangle) should match background */
+.maplibregl-popup-tip {
+  border-top-color: #2b2b2b !important;
+}
+
+/* Coordinates box (bottom-left) */
+.coords-box {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  background: rgba(43,43,43,0.9);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  z-index: 9999;
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 /* --- Conteneur principal --- */
