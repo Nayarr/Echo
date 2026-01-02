@@ -20,6 +20,14 @@ $loader->register();
 $action = $_GET['action'] ?? 'carte';
 $controller = $_GET['controller'] ?? 'point';
 
+// Si c'est une requête API, désactiver l'affichage d'erreurs HTML
+// pour éviter d'envoyer des pages d'erreur PHP aux clients qui attendent du JSON.
+if (is_string($action) && strpos($action, 'api') === 0) {
+    ini_set('display_errors', 0);
+    ini_set('display_startup_errors', 0);
+    error_reporting(0);
+}
+
 // si ca renvoie ca : frontController.php?action=readAll&controller=trajet
 
 // Construction dynamique du nom de classe du contrôleur

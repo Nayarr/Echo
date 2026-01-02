@@ -33,7 +33,7 @@ class Conf
         'login' => 'root',
 
         // Mot de passe correspondant au login (souvent vide en local)
-        'password' => ''
+        'password' => 'root'
     );
 
 
@@ -59,6 +59,21 @@ class Conf
     // Retourne le mot de passe MySQL
     static public function getPassword(): string
     {
+        // Si le serveur exécute Windows, les environnements locaux (XAMPP/MAMP)
+        // utilisent souvent un mot de passe vide pour l'utilisateur root.
+        // On détecte l'OS ici et on retourne une chaîne vide sous Windows,
+        // sinon on retourne le mot de passe configuré.
+        if (defined('PHP_OS_FAMILY')) {
+            if (PHP_OS_FAMILY === 'Windows') {
+                return '';
+            }
+        } else {
+            // Compatibilité pour anciennes versions de PHP
+            if (strncasecmp(PHP_OS, 'WIN', 3) === 0) {
+                return '';
+            }
+        }
+
         return static::$databases['password'];
     }
 }

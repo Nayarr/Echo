@@ -79,7 +79,7 @@ class PointRepository extends AbstractRepository
     {
         $pdo = DatabaseConnection::getPdo();
 
-        // Haversine formula to find nearest point within radius
+        // Formule de Haversine pour trouver le point le plus proche dans le rayon
         $sql = "
             SELECT
                 id_point,
@@ -115,7 +115,7 @@ class PointRepository extends AbstractRepository
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
-            // Ensure distance is a float
+            // S'assure que la distance est un float
             $row['distance'] = floatval($row['distance']);
             $row['latitude'] = floatval($row['latitude']);
             $row['longitude'] = floatval($row['longitude']);
