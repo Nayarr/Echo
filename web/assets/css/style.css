@@ -10,7 +10,7 @@ body {
     top: -59px;
     left: -190px;
     width: 122%;
-    height: 800%;
+    height: 407%;
     background-image: url(../img/BG.png);
     background-size: 100%;
     background-position: top;
@@ -255,6 +255,57 @@ nav {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+}
+
+/* --- Carte php style--- */
+
+main.carte-view {
+  margin: 0;
+  padding: 0;
+  height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  border: 2px solid rgba(0,255,0,0.6);
+}
+
+/* Popup styling: anthracite background with white text */
+.maplibregl-popup-content {
+  background: #2b2b2b !important;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+  padding: 8px 10px !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45) !important;
+}
+
+.maplibregl-popup-content strong {
+  color: #ffffff !important;
+}
+
+/* Popup tip (the little triangle) should match background */
+.maplibregl-popup-tip {
+  border-top-color: #2b2b2b !important;
+}
+
+/* Coordinates box (bottom-left) */
+.coords-box {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  background: rgba(43,43,43,0.9);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  z-index: 9999;
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 /* --- Conteneur principal --- */
