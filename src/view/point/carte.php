@@ -55,6 +55,8 @@ main.carte-view {
 <script src="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.js"></script>
 
 <script>
+// baseURL fourni par PHP pour construire les liens vers frontController
+const baseURL = '<?= $baseURL ?>';
 const map = new maplibregl.Map({
   container: 'map',
   style: 'https://demotiles.maplibre.org/style.json',
@@ -136,6 +138,8 @@ map.on('click', async (e) => {
         Lat: ${data.latitude}<br>
         Lon: ${data.longitude}<br>
         Distance: ${data.distance.toFixed(2)} km
+        <br><br>
+        <a href="${baseURL}?action=detail&controller=point&id=${data.id_point}">Voir le détail</a>
       `)
       .addTo(map);
   } catch (err) {

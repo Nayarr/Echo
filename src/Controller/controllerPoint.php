@@ -95,5 +95,78 @@ class controllerPoint
         }
     }
 
+    public static function apiCopernicusPoint(): void
+    {
+        header("Content-Type: application/json; charset=utf-8");
+
+        $lat = $_GET['lat'] ?? null;
+        $lon = $_GET['lon'] ?? null;
+        $start = $_GET['start'] ?? null;
+        $end = $_GET['end'] ?? null;
+        $dataset = $_GET['dataset'] ?? 'cmems_mod_glo_phy_anfc_0.083deg_PT1H-m';
+        $variables = $_GET['variables'] ?? 'so,thetao';
+
+        if ($lat === null || $lon === null || $start === null || $end === null) {
+            http_response_code(400);
+            echo json_encode(["error" => "Missing parameters: lat, lon, start, end required"]);
+            return;
+        }
+
+        $py = __DIR__ . '/../../scripts/fetch_copernicus.py';
+        $cmd = escapeshellcmd("python3") . ' ' . escapeshellarg($py)
+            . ' --lat ' . escapeshellarg($lat)
+            . ' --lon ' . escapeshellarg($lon)
+            . ' --start ' . escapeshellarg($start)
+            . ' --end ' . escapeshellarg($end)
+            . ' --dataset ' . escapeshellarg($dataset)
+            . ' --variables ' . escapeshellarg($variables);
+
+        // Exécute le script Python et capture la sortie
+        $output = null;
+        $ret = null;
+        exec($cmd, $output, $ret);
+
+        $full = implode("\n", $output);
+        // si le script a renvoyé une erreur JSON, on la propage
+        $decoded = json_decode($full, true);
+        if ($decoded === null) {
+            http_response_code(500);
+            echo json_encode(["error" => "Failed to parse python output", "raw" => $full]);
+            return;
+        }
+
+        echo json_encode($decoded);
+    }
+
+    public static function detail(): void
+    {
+        $id = intval($_GET['id'] ?? 0);
+
+        $latitude = 0.0;
+        $longitude = 0.0;
+
+        if ($id > 0) {
+            try {
+                $repo = new PointRepository();
+                $pointObj = $repo->select((string)$id);
+                if ($pointObj !== null) {
+                    // $pointObj is an instance of Point
+                    $latitude = $pointObj->getLatitude();
+                    $longitude = $pointObj->getLongitude();
+                }
+            } catch (\Throwable $e) {
+                // ignore and show page without coords
+            }
+        }
+
+        ControllerPoint::afficheVue('point/view.php', [
+            'pagetitle' => 'Détail point',
+            'cheminVueBody' => 'detail.php',
+            'id_point' => $id,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+        ]);
+    }
+
     
 }
