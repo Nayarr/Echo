@@ -1,4 +1,28 @@
 <?php
+// Inclure l'autoloader de Composer
+require __DIR__ . '/../vendor/autoload.php'; // remonte d'un niveau depuis web/ vers Echo/vendor
+
+// Importer la classe Firebase Factory
+use Kreait\Firebase\Factory;
+
+// Créer l'instance Firebase avec la clé JSON et l'URL exacte de la base
+$factory = (new Factory)
+    ->withServiceAccount(__DIR__ . '/../config/sae300-bf9d4-firebase-adminsdk-fbsvc-58fb070de1.json')
+    ->withDatabaseUri('https://sae300-bf9d4-default-rtdb.europe-west1.firebasedatabase.app/');
+
+// Accéder à la Realtime Database
+$database = $factory->createDatabase();
+
+// Ajouter une donnée test
+$newPost = $database
+    ->getReference('test') // nom du noeud
+    ->push([
+        'message' => 'Hello Firebase depuis PHP!'
+    ]);
+
+// Afficher l'ID de la nouvelle donnée
+echo "Données ajoutées avec succès ! ID : " . $newPost->getKey();
+
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
