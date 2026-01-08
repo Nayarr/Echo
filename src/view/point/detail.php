@@ -1,6 +1,7 @@
 <?php
-// Page minimale de détail d'un point.
-// Variables attendues depuis le contrôleur : $id_point, $baseURL
+// Page de détail d'un point avec chargement PHP des données Copernicus.
+// Variables attendues depuis le contrôleur : 
+// $id_point, $baseURL, $latitude, $longitude, $measurements (array des mesures)
 ?>
 <div>
 	<h2>Détail du point #<?= htmlspecialchars($id_point ?? 0) ?></h2>
@@ -10,85 +11,57 @@
 		<label>ID du point: </label><span id="point-id"><?= intval($id_point ?? 0) ?></span>
 	</div>
 
-	<div><!-- Période automatique (aucun champ requis) --></div>
+	<div>
+		<label>Coordonnées: </label>
+		<span>Latitude: <?= number_format($latitude ?? 0, 6) ?>° / Longitude: <?= number_format($longitude ?? 0, 6) ?>°</span>
+	</div>
 
-	<h2>Valeurs</h2>
-	<div id="values">—</div>
+	<h2>Valeurs les plus récentes</h2>
+	<div id="values">
+		<?php if (isset($error_message)): ?>
+			<p style="color: #d32f2f;"><?= htmlspecialchars($error_message) ?></p>
+		<?php elseif (empty($measurements)): ?>
+			<p>Aucune mesure disponible pour ce point.</p>
+		<?php else: ?>
+			<?php 
+			// Noms français pour les variables
+			$varNames = [
+				'so' => 'Salinité',
+				'thetao' => 'Température'
+			];
+			?>
+			<table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+				<thead>
+					<tr style="background-color: #f5f5f5; border-bottom: 2px solid #ddd;">
+						<th style="padding: 10px; text-align: left;">Variable</th>
+						<th style="padding: 10px; text-align: left;">Date</th>
+						<th style="padding: 10px; text-align: right;">Valeur</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach ($measurements as $varKey => $data): ?>
+						<tr style="border-bottom: 1px solid #eee;">
+							<td style="padding: 10px;">
+								<strong><?= htmlspecialchars($varNames[$varKey] ?? $varKey) ?></strong>
+							</td>
+							<td style="padding: 10px;">
+								<?= htmlspecialchars($data['date']) ?>
+							</td>
+							<td style="padding: 10px; text-align: right; font-family: monospace;">
+								<?= number_format($data['value'], 4, ',', ' ') ?>
+							</td>
+						</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+		<?php endif; ?>
+	</div>
 
+	<?php if (!empty($measurements)): ?>
+		<div style="margin-top: 20px;">
+			<small style="color: #666;">
+				Données récupérées depuis Copernicus Marine Service
+			</small>
+		</div>
+	<?php endif; ?>
 </div>
-
-<script>
-const baseURL = '<?= $baseURL ?>';
-const pointId = <?= intval($id_point ?? 0) ?>;
-const pointLat = <?= isset($latitude) ? floatval($latitude) : 0 ?>;
-const pointLon = <?= isset($longitude) ? floatval($longitude) : 0 ?>;
-
-// Noms français pour les variables
-const varNames = {
-	'so': 'Salinité',
-	'thetao': 'Température'
-};
-
-async function loadMeasurements() {
-	// Récupère les dates entrées ; si aucune plage fournie on utilise 365 jours par défaut
-	const startElem = document.getElementById('start');
-	const endElem = document.getElementById('end');
-	let start = startElem ? startElem.value : '';
-	let end = endElem ? endElem.value : '';
-	if (!start || !end) {
-		const d = new Date();
-		end = d.toISOString().slice(0,10);
-		const s = new Date(d);
-		s.setDate(d.getDate() - 365);
-		start = s.toISOString().slice(0,10);
-	}
-
-	const url = `${baseURL}?action=apiCopernicusPoint&controller=point&lat=${encodeURIComponent(pointLat)}&lon=${encodeURIComponent(pointLon)}&start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}&dataset=cmems_mod_glo_phy_anfc_0.083deg_PT1H-m&variables=so,thetao`;
-
-	document.getElementById('values').textContent = 'Chargement...';
-
-	try {
-		const res = await fetch(url);
-		const json = await res.json();
-
-
-		if (!Array.isArray(json)) {
-			document.getElementById('values').textContent = json.error ? ('Erreur API: ' + json.error) : JSON.stringify(json);
-			return;
-		}
-
-		// Trier par date décroissante pour prendre les plus récentes
-		json.sort((a,b) => new Date(b.date) - new Date(a.date));
-
-		// Conserver la dernière mesure non-nulle pour chaque variable
-		const latest = {};
-		for (const row of json) {
-			const vals = row.values || {};
-			for (const [k, v] of Object.entries(vals)) {
-				if ((v !== null) && (latest[k] === undefined)) {
-					latest[k] = {date: row.date, value: v};
-				}
-			}
-		}
-
-		// Affichage simple : une ligne par variable (nom français)
-		const lines = [];
-		for (const [k, o] of Object.entries(latest)) {
-			const name = varNames[k] || k;
-			lines.push(`${name} : ${o.date} , ${o.value}`);
-		}
-		if (lines.length === 0) {
-			document.getElementById('values').textContent = 'Aucune mesure trouvée sur la période.';
-		} else {
-			document.getElementById('values').textContent = lines.join('\n');
-		}
-
-	} catch (e) {
-		document.getElementById('values').textContent = 'Erreur: ' + e;
-	}
-}
-
-// Charger automatiquement la dernière mesure pour chaque variable à l'ouverture
-loadMeasurements();
-</script>
-
