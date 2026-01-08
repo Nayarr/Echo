@@ -7,7 +7,7 @@ use Kreait\Firebase\Factory;
 
 // Créer l'instance Firebase avec la clé JSON et l'URL exacte de la base
 $factory = (new Factory)
-    ->withServiceAccount(__DIR__ . '/../config/sae300-bf9d4-firebase-adminsdk-fbsvc-aca18e04ee.json')
+    ->withServiceAccount(__DIR__ . '/../config/sae300-bf9d4-firebase-adminsdk-fbsvc-6f113ba69e.json')
     ->withDatabaseUri('https://sae300-bf9d4-default-rtdb.europe-west1.firebasedatabase.app/');
 
 // Accéder à la Realtime Database
