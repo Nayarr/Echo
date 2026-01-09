@@ -54,24 +54,24 @@ class controllerPoint
         ob_start();
         header("Content-Type: application/json; charset=utf-8");
 
-        $lat = floatval($_GET["lat"] ?? 0);
-        $lon = floatval($_GET["lon"] ?? 0);
-        $radius = floatval($_GET["radius"] ?? 8);
+        $latitude = floatval($_GET["lat"] ?? 0);
+        $longitude = floatval($_GET["lon"] ?? 0);
+        $rayon = floatval($_GET["radius"] ?? 8);
 
         try {
-            $repo = new PointRepository();
-            $point = $repo->findNearestPoint($lat, $lon, $radius);
+            $depot = new PointRepository();
+            $point = $depot->trouverPointLePlusProche($latitude, $longitude, $rayon);
 
             ob_get_clean();
             echo json_encode($point);
-        } catch (\Throwable $e) {
+        } catch (\Throwable $exception) {
             ob_get_clean();
             
             // Log l'erreur
-            self::logError('apiNearestPoint', $e, [
-                'lat' => $lat,
-                'lon' => $lon,
-                'radius' => $radius
+            self::enregistrerErreur('apiNearestPoint', $exception, [
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'rayon' => $rayon
             ]);
 
             http_response_code(500);
@@ -86,43 +86,43 @@ class controllerPoint
     {
         header("Content-Type: application/json; charset=utf-8");
 
-        $lat = $_GET['lat'] ?? null;
-        $lon = $_GET['lon'] ?? null;
-        $start = $_GET['start'] ?? null;
-        $end = $_GET['end'] ?? null;
-        $dataset = $_GET['dataset'] ?? 'cmems_mod_glo_phy_anfc_0.083deg_PT1H-m';
+        $latitude = $_GET['lat'] ?? null;
+        $longitude = $_GET['lon'] ?? null;
+        $dateDebut = $_GET['start'] ?? null;
+        $dateFin = $_GET['end'] ?? null;
+        $nomDataset = $_GET['dataset'] ?? 'cmems_mod_glo_phy_anfc_0.083deg_PT1H-m';
         $variables = $_GET['variables'] ?? 'so,thetao';
 
-        if ($lat === null || $lon === null || $start === null || $end === null) {
+        if ($latitude === null || $longitude === null || $dateDebut === null || $dateFin === null) {
             http_response_code(400);
             echo json_encode(["error" => "Missing parameters: lat, lon, start, end required"]);
             return;
         }
 
         try {
-            $repo = new PointRepository();
-            $result = $repo->fetchCopernicusData(
-                floatval($lat),
-                floatval($lon),
-                $start,
-                $end,
-                $dataset,
+            $depot = new PointRepository();
+            $resultat = $depot->recupererDonneesCopernicus(
+                floatval($latitude),
+                floatval($longitude),
+                $dateDebut,
+                $dateFin,
+                $nomDataset,
                 $variables
             );
 
-            if (!$result['success']) {
+            if (!$resultat['succes']) {
                 http_response_code(500);
-                echo json_encode(["error" => $result['error']]);
+                echo json_encode(["error" => $resultat['erreur']]);
                 return;
             }
 
-            echo json_encode($result['data']);
-        } catch (\Throwable $e) {
-            self::logError('apiCopernicusPoint', $e, [
-                'lat' => $lat,
-                'lon' => $lon,
-                'start' => $start,
-                'end' => $end
+            echo json_encode($resultat['donnees']);
+        } catch (\Throwable $exception) {
+            self::enregistrerErreur('apiCopernicusPoint', $exception, [
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'dateDebut' => $dateDebut,
+                'dateFin' => $dateFin
             ]);
 
             http_response_code(500);
@@ -135,85 +135,82 @@ class controllerPoint
      */
     public static function detail(): void
     {
-        $id = intval($_GET['id'] ?? 0);
-        $selected_years = intval($_GET['years'] ?? 1);
+        $idPoint = intval($_GET['id'] ?? 0);
+        $nombreAnneesSelectionnees = intval($_GET['years'] ?? 1);
         
         // Valider le nombre d'années (entre 1 et 10)
-        if ($selected_years < 1 || $selected_years > 10) {
-            $selected_years = 1;
+        if ($nombreAnneesSelectionnees < 1 || $nombreAnneesSelectionnees > 10) {
+            $nombreAnneesSelectionnees = 1;
         }
 
         // Initialisation des variables pour la vue
         $latitude = 0.0;
         $longitude = 0.0;
-        $measurements = [];
-        $yearly_averages = [];
-        $yearly_data = [];
-        $seasonal_averages = [];
-        $error_message = null;
-        $period_start = '';
-        $period_end = '';
+        $mesuresRecentes = [];
+        $moyennesAnnuelles = [];
+        $donneesAnnuelles = [];
+        $moyennesSaisonnieres = [];
+        $messageErreur = null;
+        $dateDebutPeriode = '';
+        $dateFinPeriode = '';
 
-        if ($id <= 0) {
-            $error_message = "ID de point invalide.";
+        if ($idPoint <= 0) {
+            $messageErreur = "ID de point invalide.";
         } else {
             try {
-                $repo = new PointRepository();
-                $pointObj = $repo->select((string)$id);
+                $depot = new PointRepository();
+                $objetPoint = $depot->select((string)$idPoint);
                 
-                if ($pointObj === null) {
-                    $error_message = "Point non trouvé dans la base de données.";
+                if ($objetPoint === null) {
+                    $messageErreur = "Point non trouvé dans la base de données.";
                 } else {
-                    $latitude = $pointObj->getLatitude();
-                    $longitude = $pointObj->getLongitude();
+                    $latitude = $objetPoint->getLatitude();
+                    $longitude = $objetPoint->getLongitude();
 
                     // 1. Récupérer les données du jour pour les valeurs récentes
-                    $today = date('Y-m-d');
-                    $resultToday = $repo->fetchCopernicusData(
+                    $aujourdhui = date('Y-m-d');
+                    $resultatJour = $depot->recupererDonneesCopernicus(
                         $latitude,
                         $longitude,
-                        $today,
-                        $today,
+                        $aujourdhui,
+                        $aujourdhui,
                         'cmems_mod_glo_phy_anfc_0.083deg_PT1H-m',
                         'so,thetao'
                     );
 
-                    if ($resultToday['success']) {
-                        $measurements = $repo->extractLatestMeasurements($resultToday['data']);
+                    if ($resultatJour['succes']) {
+                        $mesuresRecentes = $depot->extraireDernieresMesures($resultatJour['donnees']);
                     }
 
                     // 2. Récupérer et analyser les données sur X années
-                    $endOfPeriod = date('Y-m-d');
-                    $startOfPeriod = date('Y-m-d', strtotime("-{$selected_years} years"));
-                    
-                    $period_start = $startOfPeriod;
-                    $period_end = $endOfPeriod;
+                    $dateFinPeriode = date('Y-m-d');
+                    $dateDebutPeriode = date('Y-m-d', strtotime("-{$nombreAnneesSelectionnees} years"));
                     
                     // Utiliser la méthode façade pour tout récupérer en une fois
-                    $analysis = $repo->getPointAnalysis(
+                    $analyse = $depot->obtenirAnalysePoint(
                         $latitude,
                         $longitude,
-                        $startOfPeriod,
-                        $endOfPeriod
+                        $dateDebutPeriode,
+                        $dateFinPeriode
                     );
 
-                    if ($analysis['success']) {
-                        $yearly_averages = $analysis['statistics'];
-                        $yearly_data = $analysis['chart_data'];
-                        $seasonal_averages = $analysis['seasonal_averages'];
+                    if ($analyse['succes']) {
+                        $moyennesAnnuelles = $analyse['statistiques'];
+                        $donneesAnnuelles = $analyse['donneesGraphique'];
+                        $moyennesSaisonnieres = $analyse['moyennesSaisonnieres'];
                     } else {
                         // Si échec uniquement pour la période, on garde les mesures du jour
-                        if (empty($measurements)) {
-                            $error_message = "Erreur lors de la récupération des données : " . $analysis['error'];
+                        if (empty($mesuresRecentes)) {
+                            $messageErreur = "Erreur lors de la récupération des données : " . $analyse['erreur'];
                         }
                     }
                 }
-            } catch (\Throwable $e) {
-                $error_message = "Erreur : " . $e->getMessage();
+            } catch (\Throwable $exception) {
+                $messageErreur = "Erreur : " . $exception->getMessage();
                 
-                self::logError('detail', $e, [
-                    'id' => $id,
-                    'years' => $selected_years
+                self::enregistrerErreur('detail', $exception, [
+                    'idPoint' => $idPoint,
+                    'nombreAnnees' => $nombreAnneesSelectionnees
                 ]);
             }
         }
@@ -222,40 +219,40 @@ class controllerPoint
         self::afficheVue('point/view.php', [
             'pagetitle' => 'Détail point',
             'cheminVueBody' => 'detail.php',
-            'id_point' => $id,
+            'id_point' => $idPoint,
             'latitude' => $latitude,
             'longitude' => $longitude,
-            'measurements' => $measurements,
-            'yearly_averages' => $yearly_averages,
-            'yearly_data' => $yearly_data,
-            'seasonal_averages' => $seasonal_averages,
-            'selected_years' => $selected_years,
-            'period_start' => $period_start,
-            'period_end' => $period_end,
-            'error_message' => $error_message
+            'mesuresRecentes' => $mesuresRecentes,
+            'moyennesAnnuelles' => $moyennesAnnuelles,
+            'donneesAnnuelles' => $donneesAnnuelles,
+            'moyennesSaisonnieres' => $moyennesSaisonnieres,
+            'nombreAnneesSelectionnees' => $nombreAnneesSelectionnees,
+            'dateDebutPeriode' => $dateDebutPeriode,
+            'dateFinPeriode' => $dateFinPeriode,
+            'messageErreur' => $messageErreur
         ]);
     }
 
     /**
      * Méthode utilitaire pour logger les erreurs
      */
-    private static function logError(string $action, \Throwable $e, array $context = []): void
+    private static function enregistrerErreur(string $action, \Throwable $exception, array $contexte = []): void
     {
-        $logDir = __DIR__ . '/../../var/log';
-        if (!is_dir($logDir)) {
-            @mkdir($logDir, 0755, true);
+        $dossierLogs = __DIR__ . '/../../var/log';
+        if (!is_dir($dossierLogs)) {
+            @mkdir($dossierLogs, 0755, true);
         }
 
-        $logFile = $logDir . '/controller_errors.log';
-        $now = date('Y-m-d H:i:s');
+        $fichierLog = $dossierLogs . '/controller_errors.log';
+        $maintenant = date('Y-m-d H:i:s');
         
-        $msg = "[$now] Action: $action\n";
-        foreach ($context as $key => $value) {
-            $msg .= "$key: " . print_r($value, true) . "\n";
+        $message = "[$maintenant] Action: $action\n";
+        foreach ($contexte as $cle => $valeur) {
+            $message .= "$cle: " . print_r($valeur, true) . "\n";
         }
-        $msg .= "Error: " . $e->getMessage() . "\n";
-        $msg .= $e->getTraceAsString() . "\n\n";
+        $message .= "Erreur: " . $exception->getMessage() . "\n";
+        $message .= $exception->getTraceAsString() . "\n\n";
         
-        @file_put_contents($logFile, $msg, FILE_APPEND);
+        @file_put_contents($fichierLog, $message, FILE_APPEND);
     }
 }

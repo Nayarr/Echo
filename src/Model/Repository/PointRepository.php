@@ -48,30 +48,30 @@ class PointRepository extends AbstractRepository
     /**
      * Méthode essentielle : transforme une ligne SQL en objet Point.
      */
-    public function construire(array $row): Point
+    public function construire(array $ligneTableau): Point
     {
         return new Point(
-            $row["id_point"],
-            $row["latitude"],
-            $row["longitude"],
-            $row["geom"]
+            $ligneTableau["id_point"],
+            $ligneTableau["latitude"],
+            $ligneTableau["longitude"],
+            $ligneTableau["geom"]
         );
     }
 
     /**
      * Trouve le point le plus proche dans un rayon donné.
      * 
-     * @param float $lat Latitude de référence
-     * @param float $lon Longitude de référence
-     * @param float $radiusKm Rayon de recherche en km
+     * @param float $latitude Latitude de référence
+     * @param float $longitude Longitude de référence
+     * @param float $rayonKm Rayon de recherche en km
      * @return array|null Point trouvé avec sa distance, ou null
      */
-    public function findNearestPoint(float $lat, float $lon, float $radiusKm = 50): ?array
+    public function trouverPointLePlusProche(float $latitude, float $longitude, float $rayonKm = 50): ?array
     {
         $pdo = DatabaseConnection::getPdo();
 
         // Formule de Haversine pour trouver le point le plus proche dans le rayon
-        $sql = "
+        $requeteSQL = "
             SELECT
                 id_point,
                 latitude,
@@ -92,27 +92,27 @@ class PointRepository extends AbstractRepository
                     * cos(radians(longitude) - radians(:lon))
                     + sin(radians(:lat)) * sin(radians(latitude))
                   )
-                ) <= :radius
+                ) <= :rayon
             ORDER BY distance ASC
             LIMIT 1
         ";
 
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':lat', $lat);
-        $stmt->bindValue(':lon', $lon);
-        $stmt->bindValue(':radius', $radiusKm);
-        $stmt->execute();
+        $statement = $pdo->prepare($requeteSQL);
+        $statement->bindValue(':lat', $latitude);
+        $statement->bindValue(':lon', $longitude);
+        $statement->bindValue(':rayon', $rayonKm);
+        $statement->execute();
 
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $ligne = $statement->fetch(PDO::FETCH_ASSOC);
 
-        if ($row) {
+        if ($ligne) {
             // S'assure que la distance est un float
-            $row['distance'] = floatval($row['distance']);
-            $row['latitude'] = floatval($row['latitude']);
-            $row['longitude'] = floatval($row['longitude']);
+            $ligne['distance'] = floatval($ligne['distance']);
+            $ligne['latitude'] = floatval($ligne['latitude']);
+            $ligne['longitude'] = floatval($ligne['longitude']);
         }
 
-        return $row ?: null;
+        return $ligne ?: null;
     }
 
     // =========================================================================
@@ -122,79 +122,97 @@ class PointRepository extends AbstractRepository
     /**
      * Récupère les données Copernicus via le script Python
      * 
-     * @param float $lat Latitude
-     * @param float $lon Longitude
-     * @param string $start Date de début (YYYY-MM-DD)
-     * @param string $end Date de fin (YYYY-MM-DD)
-     * @param string $dataset ID du dataset Copernicus
+     * @param float $latitude Latitude
+     * @param float $longitude Longitude
+     * @param string $dateDebut Date de début (YYYY-MM-DD)
+     * @param string $dateFin Date de fin (YYYY-MM-DD)
+     * @param string $nomDataset ID du dataset Copernicus
      * @param string $variables Variables séparées par des virgules (ex: 'so,thetao')
-     * @return array Tableau associatif avec 'success' (bool), 'data' (array) ou 'error' (string)
+     * @return array Tableau associatif avec 'succes' (bool), 'donnees' (array) ou 'erreur' (string)
      */
-    public function fetchCopernicusData(
-        float $lat, 
-        float $lon, 
-        string $start, 
-        string $end, 
-        string $dataset = 'cmems_mod_glo_phy_anfc_0.083deg_PT1H-m',
+    public function recupererDonneesCopernicus(
+        float $latitude, 
+        float $longitude, 
+        string $dateDebut, 
+        string $dateFin, 
+        string $nomDataset = 'cmems_mod_glo_phy_anfc_0.083deg_PT1H-m',
         string $variables = 'so,thetao'
     ): array {
-        $py = __DIR__ . '/../../../scripts/fetch_copernicus.py';
+        $cheminScriptPython = __DIR__ . '/../../../scripts/fetch_copernicus.py';
         
         // Vérifier que le script Python existe
-        if (!file_exists($py)) {
+        if (!file_exists($cheminScriptPython)) {
             return [
-                'success' => false,
-                'error' => 'Script Python introuvable: ' . $py
+                'succes' => false,
+                'erreur' => 'Script Python introuvable: ' . $cheminScriptPython
             ];
         }
 
-        $cmd = escapeshellcmd("python3") . ' ' . escapeshellarg($py)
-            . ' --lat ' . escapeshellarg($lat)
-            . ' --lon ' . escapeshellarg($lon)
-            . ' --start ' . escapeshellarg($start)
-            . ' --end ' . escapeshellarg($end)
-            . ' --dataset ' . escapeshellarg($dataset)
+        // Détection de la commande Python selon l'OS
+        $commandePython = 'python3'; // Par défaut pour Linux/Mac
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            // Sur Windows, essayer 'python' d'abord
+            $commandePython = 'python';
+        }
+
+        // MODE DEBUG : Vérifier quel Python est utilisé
+        exec($commandePython . ' --version 2>&1', $sortieVersion);
+        exec($commandePython . ' -c "import sys; print(sys.executable)" 2>&1', $sortieChemin);
+        
+        $informationsDebug = [
+            'version_python' => implode(' ', $sortieVersion),
+            'chemin_python' => implode(' ', $sortieChemin),
+            'systeme_exploitation' => PHP_OS,
+            'commande' => $commandePython
+        ];
+
+        $commande = escapeshellcmd($commandePython) . ' ' . escapeshellarg($cheminScriptPython)
+            . ' --lat ' . escapeshellarg($latitude)
+            . ' --lon ' . escapeshellarg($longitude)
+            . ' --start ' . escapeshellarg($dateDebut)
+            . ' --end ' . escapeshellarg($dateFin)
+            . ' --dataset ' . escapeshellarg($nomDataset)
             . ' --variables ' . escapeshellarg($variables);
 
         // Exécute le script Python et capture la sortie
-        $output = null;
-        $ret = null;
-        exec($cmd . ' 2>&1', $output, $ret);
+        $sortie = null;
+        $codeRetour = null;
+        exec($commande . ' 2>&1', $sortie, $codeRetour);
 
-        $full = implode("\n", $output);
+        $sortieComplete = implode("\n", $sortie);
         
         // Filtrer les lignes INFO pour ne garder que le JSON
-        $lines = explode("\n", $full);
-        $jsonLines = [];
-        foreach ($lines as $line) {
+        $lignes = explode("\n", $sortieComplete);
+        $lignesJSON = [];
+        foreach ($lignes as $ligne) {
             // Ignorer les lignes qui commencent par INFO ou WARNING
-            if (!preg_match('/^(INFO|WARNING|DEBUG|ERROR)\s*-/', trim($line))) {
-                $jsonLines[] = $line;
+            if (!preg_match('/^(INFO|WARNING|DEBUG|ERROR)\s*-/', trim($ligne))) {
+                $lignesJSON[] = $ligne;
             }
         }
-        $jsonOutput = implode("\n", $jsonLines);
+        $sortieJSON = implode("\n", $lignesJSON);
         
         // Tenter de décoder le JSON
-        $decoded = json_decode($jsonOutput, true);
+        $donneesDecodees = json_decode($sortieJSON, true);
         
-        if ($decoded === null) {
+        if ($donneesDecodees === null) {
             return [
-                'success' => false,
-                'error' => 'Erreur lors du décodage JSON. Sortie filtrée: ' . substr($jsonOutput, 0, 500)
+                'succes' => false,
+                'erreur' => 'Erreur lors du décodage JSON. Debug: ' . json_encode($informationsDebug) . ' | Sortie: ' . substr($sortieJSON, 0, 500)
             ];
         }
 
         // Vérifier si c'est une erreur renvoyée par le script Python
-        if (isset($decoded['error'])) {
+        if (isset($donneesDecodees['error'])) {
             return [
-                'success' => false,
-                'error' => $decoded['error']
+                'succes' => false,
+                'erreur' => $donneesDecodees['error'] . ' | Debug: ' . json_encode($informationsDebug)
             ];
         }
 
         return [
-            'success' => true,
-            'data' => $decoded
+            'succes' => true,
+            'donnees' => $donneesDecodees
         ];
     }
 
@@ -205,89 +223,89 @@ class PointRepository extends AbstractRepository
     /**
      * Extrait les dernières mesures non-nulles de chaque variable
      * 
-     * @param array $data Tableau de données Copernicus
-     * @return array Tableau associatif [variable => ['date' => ..., 'value' => ...]]
+     * @param array $donnees Tableau de données Copernicus
+     * @return array Tableau associatif [variable => ['date' => ..., 'valeur' => ...]]
      */
-    public function extractLatestMeasurements(array $data): array {
+    public function extraireDernieresMesures(array $donnees): array {
         // Trier par date décroissante pour prendre les plus récentes
-        usort($data, function($a, $b) {
+        usort($donnees, function($a, $b) {
             return strtotime($b['date']) - strtotime($a['date']);
         });
 
-        $latest = [];
+        $dernieresMesures = [];
         
-        foreach ($data as $row) {
-            $values = $row['values'] ?? [];
+        foreach ($donnees as $ligne) {
+            $valeurs = $ligne['values'] ?? [];
             
-            foreach ($values as $varKey => $value) {
+            foreach ($valeurs as $cleVariable => $valeur) {
                 // Si la variable n'a pas encore été trouvée et la valeur n'est pas nulle
-                if (!isset($latest[$varKey]) && $value !== null) {
-                    $latest[$varKey] = [
-                        'date' => $row['date'],
-                        'value' => floatval($value)
+                if (!isset($dernieresMesures[$cleVariable]) && $valeur !== null) {
+                    $dernieresMesures[$cleVariable] = [
+                        'date' => $ligne['date'],
+                        'valeur' => floatval($valeur)
                     ];
                 }
             }
         }
 
-        return $latest;
+        return $dernieresMesures;
     }
 
     /**
      * Prépare les données pour le graphique (agrégation par jour)
      * 
-     * @param array $data Tableau de données Copernicus
+     * @param array $donnees Tableau de données Copernicus
      * @return array Tableau trié par date avec moyennes journalières
      */
-    public function prepareChartData(array $data): array {
+    public function preparerDonneesGraphique(array $donnees): array {
         // Regrouper par date et calculer la moyenne journalière
-        $byDate = [];
+        $donneesParDate = [];
         
-        foreach ($data as $row) {
-            $date = $row['date'];
-            $values = $row['values'] ?? [];
+        foreach ($donnees as $ligne) {
+            $date = $ligne['date'];
+            $valeurs = $ligne['values'] ?? [];
             
-            if (!isset($byDate[$date])) {
-                $byDate[$date] = [
+            if (!isset($donneesParDate[$date])) {
+                $donneesParDate[$date] = [
                     'date' => $date,
-                    'values' => [],
-                    'counts' => []
+                    'valeurs' => [],
+                    'compteurs' => []
                 ];
             }
             
-            foreach ($values as $varKey => $value) {
-                if ($value !== null) {
-                    if (!isset($byDate[$date]['values'][$varKey])) {
-                        $byDate[$date]['values'][$varKey] = 0;
-                        $byDate[$date]['counts'][$varKey] = 0;
+            foreach ($valeurs as $cleVariable => $valeur) {
+                if ($valeur !== null) {
+                    if (!isset($donneesParDate[$date]['valeurs'][$cleVariable])) {
+                        $donneesParDate[$date]['valeurs'][$cleVariable] = 0;
+                        $donneesParDate[$date]['compteurs'][$cleVariable] = 0;
                     }
-                    $byDate[$date]['values'][$varKey] += floatval($value);
-                    $byDate[$date]['counts'][$varKey]++;
+                    $donneesParDate[$date]['valeurs'][$cleVariable] += floatval($valeur);
+                    $donneesParDate[$date]['compteurs'][$cleVariable]++;
                 }
             }
         }
         
         // Calculer les moyennes
-        $chartData = [];
-        foreach ($byDate as $date => $info) {
-            $avgValues = [];
-            foreach ($info['values'] as $varKey => $sum) {
-                $count = $info['counts'][$varKey];
-                $avgValues[$varKey] = $count > 0 ? $sum / $count : null;
+        $donneesGraphique = [];
+        foreach ($donneesParDate as $date => $informations) {
+            $valeursMoyennes = [];
+            foreach ($informations['valeurs'] as $cleVariable => $somme) {
+                $compteur = $informations['compteurs'][$cleVariable];
+                $valeursMoyennes[$cleVariable] = $compteur > 0 ? $somme / $compteur : null;
             }
             
-            $chartData[] = [
+            $donneesGraphique[] = [
                 'date' => $date,
-                'values' => $avgValues
+                'valeurs' => $valeursMoyennes
             ];
         }
         
         // Trier par date
-        usort($chartData, function($a, $b) {
+        usort($donneesGraphique, function($a, $b) {
             return strcmp($a['date'], $b['date']);
         });
         
-        return $chartData;
+        return $donneesGraphique;
     }
 
     // =========================================================================
@@ -297,64 +315,64 @@ class PointRepository extends AbstractRepository
     /**
      * Calcule les statistiques globales (moyenne, min, max, écart-type) pour chaque variable
      * 
-     * @param array $data Tableau de données Copernicus
-     * @return array Tableau associatif [variable => ['avg' => ..., 'min' => ..., 'max' => ..., 'std' => ...]]
+     * @param array $donnees Tableau de données Copernicus
+     * @return array Tableau associatif [variable => ['moyenne' => ..., 'minimum' => ..., 'maximum' => ..., 'ecartType' => ...]]
      */
-    public function calculateStatistics(array $data): array {
-        $stats = [];
+    public function calculerStatistiques(array $donnees): array {
+        $statistiques = [];
         
         // Collecter toutes les valeurs par variable
-        $valuesByVar = [];
+        $valeursParVariable = [];
         
-        foreach ($data as $row) {
-            $values = $row['values'] ?? [];
+        foreach ($donnees as $ligne) {
+            $valeurs = $ligne['values'] ?? [];
             
-            foreach ($values as $varKey => $value) {
-                if ($value !== null) {
-                    if (!isset($valuesByVar[$varKey])) {
-                        $valuesByVar[$varKey] = [];
+            foreach ($valeurs as $cleVariable => $valeur) {
+                if ($valeur !== null) {
+                    if (!isset($valeursParVariable[$cleVariable])) {
+                        $valeursParVariable[$cleVariable] = [];
                     }
-                    $valuesByVar[$varKey][] = floatval($value);
+                    $valeursParVariable[$cleVariable][] = floatval($valeur);
                 }
             }
         }
         
         // Calculer les statistiques pour chaque variable
-        foreach ($valuesByVar as $varKey => $values) {
-            if (count($values) > 0) {
-                $avg = array_sum($values) / count($values);
+        foreach ($valeursParVariable as $cleVariable => $valeurs) {
+            if (count($valeurs) > 0) {
+                $moyenne = array_sum($valeurs) / count($valeurs);
                 
                 // Calcul de l'écart-type
                 $variance = 0;
-                foreach ($values as $val) {
-                    $variance += pow($val - $avg, 2);
+                foreach ($valeurs as $valeur) {
+                    $variance += pow($valeur - $moyenne, 2);
                 }
-                $std = sqrt($variance / count($values));
+                $ecartType = sqrt($variance / count($valeurs));
                 
-                $stats[$varKey] = [
-                    'avg' => $avg,
-                    'min' => min($values),
-                    'max' => max($values),
-                    'std' => $std,
-                    'count' => count($values)
+                $statistiques[$cleVariable] = [
+                    'moyenne' => $moyenne,
+                    'minimum' => min($valeurs),
+                    'maximum' => max($valeurs),
+                    'ecartType' => $ecartType,
+                    'nombreMesures' => count($valeurs)
                 ];
             }
         }
         
-        return $stats;
+        return $statistiques;
     }
 
     /**
      * Calcule les moyennes saisonnières pour chaque variable
      * 
-     * @param array $data Tableau de données Copernicus
-     * @return array Tableau associatif [variable => [season => ['avg' => ..., 'min' => ..., 'max' => ...]]]
+     * @param array $donnees Tableau de données Copernicus
+     * @return array Tableau associatif [variable => [saison => ['moyenne' => ..., 'minimum' => ..., 'maximum' => ...]]]
      */
-    public function calculateSeasonalAverages(array $data): array {
-        $seasonalData = [];
+    public function calculerMoyennesSaisonnieres(array $donnees): array {
+        $donneesSaisonnieres = [];
         
         // Définir les saisons (hémisphère nord)
-        $seasons = [
+        $saisons = [
             'Hiver' => [12, 1, 2],
             'Printemps' => [3, 4, 5],
             'Été' => [6, 7, 8],
@@ -362,54 +380,54 @@ class PointRepository extends AbstractRepository
         ];
         
         // Collecter les valeurs par saison et par variable
-        $valuesBySeason = [];
+        $valeursParSaison = [];
         
-        foreach ($data as $row) {
-            $date = $row['date'];
-            $month = intval(date('n', strtotime($date)));
-            $values = $row['values'] ?? [];
+        foreach ($donnees as $ligne) {
+            $date = $ligne['date'];
+            $mois = intval(date('n', strtotime($date)));
+            $valeurs = $ligne['values'] ?? [];
             
             // Déterminer la saison
-            $currentSeason = '';
-            foreach ($seasons as $seasonName => $months) {
-                if (in_array($month, $months)) {
-                    $currentSeason = $seasonName;
+            $saisonActuelle = '';
+            foreach ($saisons as $nomSaison => $moisSaison) {
+                if (in_array($mois, $moisSaison)) {
+                    $saisonActuelle = $nomSaison;
                     break;
                 }
             }
             
-            if (empty($currentSeason)) continue;
+            if (empty($saisonActuelle)) continue;
             
-            foreach ($values as $varKey => $value) {
-                if ($value !== null) {
-                    if (!isset($valuesBySeason[$varKey])) {
-                        $valuesBySeason[$varKey] = [];
+            foreach ($valeurs as $cleVariable => $valeur) {
+                if ($valeur !== null) {
+                    if (!isset($valeursParSaison[$cleVariable])) {
+                        $valeursParSaison[$cleVariable] = [];
                     }
-                    if (!isset($valuesBySeason[$varKey][$currentSeason])) {
-                        $valuesBySeason[$varKey][$currentSeason] = [];
+                    if (!isset($valeursParSaison[$cleVariable][$saisonActuelle])) {
+                        $valeursParSaison[$cleVariable][$saisonActuelle] = [];
                     }
-                    $valuesBySeason[$varKey][$currentSeason][] = floatval($value);
+                    $valeursParSaison[$cleVariable][$saisonActuelle][] = floatval($valeur);
                 }
             }
         }
         
         // Calculer les statistiques par saison
-        foreach ($valuesBySeason as $varKey => $seasonValues) {
-            $seasonalData[$varKey] = [];
+        foreach ($valeursParSaison as $cleVariable => $valeursSaison) {
+            $donneesSaisonnieres[$cleVariable] = [];
             
-            foreach ($seasonValues as $season => $values) {
-                if (count($values) > 0) {
-                    $seasonalData[$varKey][$season] = [
-                        'avg' => array_sum($values) / count($values),
-                        'min' => min($values),
-                        'max' => max($values),
-                        'count' => count($values)
+            foreach ($valeursSaison as $saison => $valeurs) {
+                if (count($valeurs) > 0) {
+                    $donneesSaisonnieres[$cleVariable][$saison] = [
+                        'moyenne' => array_sum($valeurs) / count($valeurs),
+                        'minimum' => min($valeurs),
+                        'maximum' => max($valeurs),
+                        'nombreMesures' => count($valeurs)
                     ];
                 }
             }
         }
         
-        return $seasonalData;
+        return $donneesSaisonnieres;
     }
 
     // =========================================================================
@@ -420,44 +438,44 @@ class PointRepository extends AbstractRepository
      * Récupère toutes les données d'analyse pour un point sur une période donnée
      * Méthode pratique qui combine toutes les opérations
      * 
-     * @param float $lat Latitude
-     * @param float $lon Longitude
-     * @param string $startDate Date de début
-     * @param string $endDate Date de fin
+     * @param float $latitude Latitude
+     * @param float $longitude Longitude
+     * @param string $dateDebut Date de début
+     * @param string $dateFin Date de fin
      * @return array Tableau complet avec toutes les analyses
      */
-    public function getPointAnalysis(
-        float $lat,
-        float $lon,
-        string $startDate,
-        string $endDate
+    public function obtenirAnalysePoint(
+        float $latitude,
+        float $longitude,
+        string $dateDebut,
+        string $dateFin
     ): array {
-        $result = [
-            'success' => false,
-            'latest_measurements' => [],
-            'statistics' => [],
-            'seasonal_averages' => [],
-            'chart_data' => [],
-            'error' => null
+        $resultat = [
+            'succes' => false,
+            'dernieresMesures' => [],
+            'statistiques' => [],
+            'moyennesSaisonnieres' => [],
+            'donneesGraphique' => [],
+            'erreur' => null
         ];
 
         // Récupérer les données brutes
-        $fetchResult = $this->fetchCopernicusData($lat, $lon, $startDate, $endDate);
+        $resultatRecuperation = $this->recupererDonneesCopernicus($latitude, $longitude, $dateDebut, $dateFin);
         
-        if (!$fetchResult['success']) {
-            $result['error'] = $fetchResult['error'];
-            return $result;
+        if (!$resultatRecuperation['succes']) {
+            $resultat['erreur'] = $resultatRecuperation['erreur'];
+            return $resultat;
         }
 
-        $data = $fetchResult['data'];
+        $donnees = $resultatRecuperation['donnees'];
 
         // Calculer toutes les analyses
-        $result['success'] = true;
-        $result['latest_measurements'] = $this->extractLatestMeasurements($data);
-        $result['statistics'] = $this->calculateStatistics($data);
-        $result['seasonal_averages'] = $this->calculateSeasonalAverages($data);
-        $result['chart_data'] = $this->prepareChartData($data);
+        $resultat['succes'] = true;
+        $resultat['dernieresMesures'] = $this->extraireDernieresMesures($donnees);
+        $resultat['statistiques'] = $this->calculerStatistiques($donnees);
+        $resultat['moyennesSaisonnieres'] = $this->calculerMoyennesSaisonnieres($donnees);
+        $resultat['donneesGraphique'] = $this->preparerDonneesGraphique($donnees);
 
-        return $result;
+        return $resultat;
     }
 }
