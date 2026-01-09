@@ -1,168 +1,57 @@
 <?php
 
-// Namespace du contrôleur Voiture.
-// Permet de structurer le projet et d'activer l'autoload PSR-4.
 namespace App\SAE\Controller;
 
-// Import des classes nécessaires :
-// - l'objet Voiture (le modèle)
-// - le repository Voiture (accès à la base)
-// - la configuration du site
 use App\SAE\Model\DataObject;
 use App\SAE\Model\Repository\PointRepository;
 use App\SAE\Config\Conf;
 
+/**
+ * Contrôleur pour les points océanographiques.
+ * 
+ * Responsabilités :
+ *  - Routing : diriger les requêtes vers les bonnes vues
+ *  - Coordination : appeler le repository et passer les données aux vues
+ *  - Pas de logique métier (déléguée au repository)
+ */
 class controllerPoint
 {
 
     /**
-     * Méthode utilitaire pour afficher une vue du module Voiture.
-     * $cheminVue : correspond au fichier de vue à afficher.
-     * $parametres : tableau contenant les variables à passer à la vue.
+     * Affiche une vue avec les paramètres fournis
      */
     private static function afficheVue(string $cheminVue, array $parametres = []): void {
-        // Ajoute automatiquement la baseURL dans les paramètres transmis à la vue.
-        // Cela permet d'avoir des liens fonctionnels dans le menu.
         $parametres['baseURL'] = Conf::getBaseURL();
-
-        // Transforme les clés du tableau en variables (ex : ["voitures" => ...] devient $voitures)
         extract($parametres);
-
-        // Charge la vue principale du module voiture
         require __DIR__ . "/../view/$cheminVue";
     }
 
     /**
-     * Méthode utilitaire pour récupérer les données Copernicus via le script Python
-     * 
-     * @param float $lat Latitude
-     * @param float $lon Longitude
-     * @param string $start Date de début (YYYY-MM-DD)
-     * @param string $end Date de fin (YYYY-MM-DD)
-     * @param string $dataset ID du dataset Copernicus
-     * @param string $variables Variables séparées par des virgules (ex: 'so,thetao')
-     * @return array Tableau associatif avec 'success' (bool), 'data' (array) ou 'error' (string)
+     * Page d'accueil
      */
-    private static function fetchCopernicusData(
-        float $lat, 
-        float $lon, 
-        string $start, 
-        string $end, 
-        string $dataset = 'cmems_mod_glo_phy_anfc_0.083deg_PT1H-m',
-        string $variables = 'so,thetao'
-    ): array {
-        $py = __DIR__ . '/../../scripts/fetch_copernicus.py';
-        
-        // Vérifier que le script Python existe
-        if (!file_exists($py)) {
-            return [
-                'success' => false,
-                'error' => 'Script Python introuvable: ' . $py
-            ];
-        }
-
-        $cmd = escapeshellcmd("python3") . ' ' . escapeshellarg($py)
-            . ' --lat ' . escapeshellarg($lat)
-            . ' --lon ' . escapeshellarg($lon)
-            . ' --start ' . escapeshellarg($start)
-            . ' --end ' . escapeshellarg($end)
-            . ' --dataset ' . escapeshellarg($dataset)
-            . ' --variables ' . escapeshellarg($variables);
-
-        // Exécute le script Python et capture la sortie
-        $output = null;
-        $ret = null;
-        exec($cmd . ' 2>&1', $output, $ret);
-
-        $full = implode("\n", $output);
-        
-        // Filtrer les lignes INFO pour ne garder que le JSON
-        $lines = explode("\n", $full);
-        $jsonLines = [];
-        foreach ($lines as $line) {
-            // Ignorer les lignes qui commencent par INFO ou WARNING
-            if (!preg_match('/^(INFO|WARNING|DEBUG|ERROR)\s*-/', trim($line))) {
-                $jsonLines[] = $line;
-            }
-        }
-        $jsonOutput = implode("\n", $jsonLines);
-        
-        // Tenter de décoder le JSON
-        $decoded = json_decode($jsonOutput, true);
-        
-        if ($decoded === null) {
-            return [
-                'success' => false,
-                'error' => 'Erreur lors du décodage JSON. Sortie brute: ' . substr($full, 0, 500)
-            ];
-        }
-
-        // Vérifier si c'est une erreur renvoyée par le script Python
-        if (isset($decoded['error'])) {
-            return [
-                'success' => false,
-                'error' => $decoded['error']
-            ];
-        }
-
-        return [
-            'success' => true,
-            'data' => $decoded
-        ];
-    }
-
-    /**
-     * Extrait les dernières mesures non-nulles de chaque variable
-     * 
-     * @param array $data Tableau de données Copernicus
-     * @return array Tableau associatif [variable => ['date' => ..., 'value' => ...]]
-     */
-    private static function extractLatestMeasurements(array $data): array {
-        // Trier par date décroissante pour prendre les plus récentes
-        usort($data, function($a, $b) {
-            return strtotime($b['date']) - strtotime($a['date']);
-        });
-
-        $latest = [];
-        
-        foreach ($data as $row) {
-            $values = $row['values'] ?? [];
-            
-            foreach ($values as $varKey => $value) {
-                // Si la variable n'a pas encore été trouvée et la valeur n'est pas nulle
-                if (!isset($latest[$varKey]) && $value !== null) {
-                    $latest[$varKey] = [
-                        'date' => $row['date'],
-                        'value' => floatval($value)
-                    ];
-                }
-            }
-        }
-
-        return $latest;
-    }
-
     public static function accueil(): void {
-        ControllerPoint::afficheVue('accueil/view.php', [
+        self::afficheVue('accueil/view.php', [
             "pagetitle" => "Accueil",
             "cheminVueBody" => "index.php"
         ]);
     }
 
+    /**
+     * Page carte des points
+     */
     public static function carte(): void {
-        ControllerPoint::afficheVue('point/view.php', [
+        self::afficheVue('point/view.php', [
             "pagetitle" => "Carte des points",
             "cheminVueBody" => "carte.php"
         ]);
     }
 
+    /**
+     * API : Trouve le point le plus proche
+     */
     public static function apiNearestPoint(): void
     {
-        // Empêche l'affichage accidentel (warnings, notices) en tamponnant la sortie
-        if (function_exists('ob_start')) {
-            ob_start();
-        }
-
+        ob_start();
         header("Content-Type: application/json; charset=utf-8");
 
         $lat = floatval($_GET["lat"] ?? 0);
@@ -173,37 +62,26 @@ class controllerPoint
             $repo = new PointRepository();
             $point = $repo->findNearestPoint($lat, $lon, $radius);
 
-            // Vider le tampon de sortie (warnings, etc.) avant d'envoyer le JSON
-            if (function_exists('ob_get_clean')) {
-                ob_get_clean();
-            }
-
+            ob_get_clean();
             echo json_encode($point);
         } catch (\Throwable $e) {
-            if (function_exists('ob_get_clean')) {
-                ob_get_clean();
-            }
-
-            // S'assure que le dossier de logs existe
-            $logDir = __DIR__ . '/../../var/log';
-            if (!is_dir($logDir)) {
-                @mkdir($logDir, 0755, true);
-            }
-
-            // Écrit les détails de l'erreur dans le journal pour le débogage
-            $logFile = $logDir . '/api_errors.log';
-            $now = date('Y-m-d H:i:s');
-            $msg = "[$now] action=apiNearestPoint ";
-            $msg .= 'lat=' . ($lat ?? 'n/a') . ' lon=' . ($lon ?? 'n/a') . ' radius=' . ($radius ?? 'n/a') . "\n";
-            $msg .= "Error: " . $e->getMessage() . "\n";
-            $msg .= $e->getTraceAsString() . "\n\n";
-            @file_put_contents($logFile, $msg, FILE_APPEND);
+            ob_get_clean();
+            
+            // Log l'erreur
+            self::logError('apiNearestPoint', $e, [
+                'lat' => $lat,
+                'lon' => $lon,
+                'radius' => $radius
+            ]);
 
             http_response_code(500);
             echo json_encode(["error" => "Internal Server Error"]);
         }
     }
 
+    /**
+     * API : Récupère les données Copernicus pour un point
+     */
     public static function apiCopernicusPoint(): void
     {
         header("Content-Type: application/json; charset=utf-8");
@@ -221,47 +99,77 @@ class controllerPoint
             return;
         }
 
-        $result = self::fetchCopernicusData(
-            floatval($lat),
-            floatval($lon),
-            $start,
-            $end,
-            $dataset,
-            $variables
-        );
+        try {
+            $repo = new PointRepository();
+            $result = $repo->fetchCopernicusData(
+                floatval($lat),
+                floatval($lon),
+                $start,
+                $end,
+                $dataset,
+                $variables
+            );
 
-        if (!$result['success']) {
+            if (!$result['success']) {
+                http_response_code(500);
+                echo json_encode(["error" => $result['error']]);
+                return;
+            }
+
+            echo json_encode($result['data']);
+        } catch (\Throwable $e) {
+            self::logError('apiCopernicusPoint', $e, [
+                'lat' => $lat,
+                'lon' => $lon,
+                'start' => $start,
+                'end' => $end
+            ]);
+
             http_response_code(500);
-            echo json_encode(["error" => $result['error']]);
-            return;
+            echo json_encode(["error" => "Internal Server Error"]);
         }
-
-        echo json_encode($result['data']);
     }
 
+    /**
+     * Page de détail d'un point avec analyses complètes
+     */
     public static function detail(): void
     {
         $id = intval($_GET['id'] ?? 0);
+        $selected_years = intval($_GET['years'] ?? 1);
+        
+        // Valider le nombre d'années (entre 1 et 10)
+        if ($selected_years < 1 || $selected_years > 10) {
+            $selected_years = 1;
+        }
 
+        // Initialisation des variables pour la vue
         $latitude = 0.0;
         $longitude = 0.0;
         $measurements = [];
+        $yearly_averages = [];
+        $yearly_data = [];
+        $seasonal_averages = [];
         $error_message = null;
+        $period_start = '';
+        $period_end = '';
 
-        if ($id > 0) {
+        if ($id <= 0) {
+            $error_message = "ID de point invalide.";
+        } else {
             try {
                 $repo = new PointRepository();
                 $pointObj = $repo->select((string)$id);
                 
-                if ($pointObj !== null) {
-                    // $pointObj is an instance of Point
+                if ($pointObj === null) {
+                    $error_message = "Point non trouvé dans la base de données.";
+                } else {
                     $latitude = $pointObj->getLatitude();
                     $longitude = $pointObj->getLongitude();
 
-                    // Récupérer les données Copernicus pour aujourd'hui
+                    // 1. Récupérer les données du jour pour les valeurs récentes
                     $today = date('Y-m-d');
-                    
-                    $result = self::fetchCopernicusData(
+                    $resultToday = $repo->fetchCopernicusData(
                         $latitude,
                         $longitude,
                         $today,
@@ -270,41 +178,84 @@ class controllerPoint
                         'so,thetao'
                     );
 
-                    if ($result['success']) {
-                        $measurements = self::extractLatestMeasurements($result['data']);
-                    } else {
-                        $error_message = "Erreur lors de la récupération des données : " . $result['error'];
+                    if ($resultToday['success']) {
+                        $measurements = $repo->extractLatestMeasurements($resultToday['data']);
                     }
-                } else {
-                    $error_message = "Point non trouvé dans la base de données.";
+
+                    // 2. Récupérer et analyser les données sur X années
+                    $endOfPeriod = date('Y-m-d');
+                    $startOfPeriod = date('Y-m-d', strtotime("-{$selected_years} years"));
+                    
+                    $period_start = $startOfPeriod;
+                    $period_end = $endOfPeriod;
+                    
+                    // Utiliser la méthode façade pour tout récupérer en une fois
+                    $analysis = $repo->getPointAnalysis(
+                        $latitude,
+                        $longitude,
+                        $startOfPeriod,
+                        $endOfPeriod
+                    );
+
+                    if ($analysis['success']) {
+                        $yearly_averages = $analysis['statistics'];
+                        $yearly_data = $analysis['chart_data'];
+                        $seasonal_averages = $analysis['seasonal_averages'];
+                    } else {
+                        // Si échec uniquement pour la période, on garde les mesures du jour
+                        if (empty($measurements)) {
+                            $error_message = "Erreur lors de la récupération des données : " . $analysis['error'];
+                        }
+                    }
                 }
             } catch (\Throwable $e) {
                 $error_message = "Erreur : " . $e->getMessage();
                 
-                // Log l'erreur
-                $logDir = __DIR__ . '/../../var/log';
-                if (!is_dir($logDir)) {
-                    @mkdir($logDir, 0755, true);
-                }
-                $logFile = $logDir . '/detail_errors.log';
-                $now = date('Y-m-d H:i:s');
-                $msg = "[$now] Point ID: $id\n";
-                $msg .= "Error: " . $e->getMessage() . "\n";
-                $msg .= $e->getTraceAsString() . "\n\n";
-                @file_put_contents($logFile, $msg, FILE_APPEND);
+                self::logError('detail', $e, [
+                    'id' => $id,
+                    'years' => $selected_years
+                ]);
             }
-        } else {
-            $error_message = "ID de point invalide.";
         }
 
-        ControllerPoint::afficheVue('point/view.php', [
+        // Afficher la vue avec toutes les données
+        self::afficheVue('point/view.php', [
             'pagetitle' => 'Détail point',
             'cheminVueBody' => 'detail.php',
             'id_point' => $id,
             'latitude' => $latitude,
             'longitude' => $longitude,
             'measurements' => $measurements,
+            'yearly_averages' => $yearly_averages,
+            'yearly_data' => $yearly_data,
+            'seasonal_averages' => $seasonal_averages,
+            'selected_years' => $selected_years,
+            'period_start' => $period_start,
+            'period_end' => $period_end,
             'error_message' => $error_message
         ]);
+    }
+
+    /**
+     * Méthode utilitaire pour logger les erreurs
+     */
+    private static function logError(string $action, \Throwable $e, array $context = []): void
+    {
+        $logDir = __DIR__ . '/../../var/log';
+        if (!is_dir($logDir)) {
+            @mkdir($logDir, 0755, true);
+        }
+
+        $logFile = $logDir . '/controller_errors.log';
+        $now = date('Y-m-d H:i:s');
+        
+        $msg = "[$now] Action: $action\n";
+        foreach ($context as $key => $value) {
+            $msg .= "$key: " . print_r($value, true) . "\n";
+        }
+        $msg .= "Error: " . $e->getMessage() . "\n";
+        $msg .= $e->getTraceAsString() . "\n\n";
+        
+        @file_put_contents($logFile, $msg, FILE_APPEND);
     }
 }
