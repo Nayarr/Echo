@@ -1,2 +1,5 @@
-config/*.json
+Cles/*.json
 /vendor/
+composer.json
+composer.lock
+src/.DS_Store
