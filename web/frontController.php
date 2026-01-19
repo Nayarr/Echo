@@ -15,7 +15,7 @@ $database = $factory->createDatabase();
 
 // Ajouter une donnée test
 $newPost = $database
-    ->getReference('test') // nom du noeud
+    ->getReference('Connexion') // nom du noeud
     ->push([
         'message' => 'Hello Firebase depuis PHP!'
     ]);
