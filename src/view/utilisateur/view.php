@@ -3,29 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <title><?php echo $pagetitle; ?></title>
-    <link rel="stylesheet" href="/Echo/web/assets/css/style.css">
-    <?php if ($pagetitle === "Carte des points"): ?>
-    <link href="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.css" rel="stylesheet"/>
-    <?php endif; ?>
+    <link rel="stylesheet" href="../web/assets/css/style.css">
 </head>
 <body>
 <header>
-    <nav>
-        <!-- Votre menu de navigation ici -->
-        <a href="<?= $baseURL ?>?action=readAll">Voiture</a>
-        <a href="<?= $baseURL ?>?action=readAll&controller=utilisateur">Utilisateur</a>
-        <a href="<?= $baseURL ?>?action=readAll&controller=trajet">Trajets</a>
+    <nav style="display: flex; gap: 15px; align-items: center; justify-content: center; padding: 10px;">
+        
+        <a href="frontController.php?controller=point&action=carte" style="text-decoration: none; color: #333; font-weight: bold;">
+            📍 Carte
+        </a>
+
+        <a href="frontController.php?controller=utilisateur&action=inscription" 
+           style="padding: 8px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">
+            S'inscrire
+        </a>
+
+        <a href="frontController.php?controller=utilisateur&action=connexion" style="text-decoration: none; color: #007bff;">
+            Se connecter
+        </a>
+
     </nav>
 </header>
-<main <?php echo ($pagetitle === "Carte des points") ? 'class="carte-view"' : ''; ?>>
 
+<main>
     <?php
+    // Inclut le fichier spécifique (inscription.php ou conection.php)
     require __DIR__ . "/{$cheminVueBody}";
     ?>
 </main>
+
 <footer>
-    
+    <p style="text-align:center; margin-top:20px;">SAE 300 - Utilisateurs</p>
 </footer>
 </body>
 </html>
-

@@ -1,68 +1,77 @@
 <?php
-// Inclure l'autoloader de Composer
-require __DIR__ . '/../vendor/autoload.php'; // remonte d'un niveau depuis web/ vers Echo/vendor
-
-// Importer la classe Firebase Factory
-use Kreait\Firebase\Factory;
-
-// Créer l'instance Firebase avec la clé JSON et l'URL exacte de la base
-$factory = (new Factory)
-    ->withServiceAccount(__DIR__ . '/../Cles/sae300-bf9d4-firebase-adminsdk-fbsvc-3f97406b36.json')
-    ->withDatabaseUri('https://sae300-bf9d4-default-rtdb.europe-west1.firebasedatabase.app/');
-
-// Accéder à la Realtime Database
-$database = $factory->createDatabase();
-
-// Ajouter une donnée test
-$newPost = $database
-    ->getReference('Connexion') // nom du noeud
-    ->push([
-        'message' => 'Hello Firebase depuis PHP!'
-    ]);
-
-// Afficher l'ID de la nouvelle donnée
-echo "Données ajoutées avec succès ! ID : " . $newPost->getKey();
-
+// Fichier : web/frontController.php
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-
-// Inclusion de la classe d’autoload pour charger automatiquement les classes du projet
+require __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/Lib/Psr4AutoloaderClass.php';
 
-// Import du contrôleur principal des voitures
-use App\SAE\Controller\ControllerPoint;
+use Kreait\Firebase\Factory;
+use App\SAE\Lib\Psr4AutoloaderClass;
+use App\SAE\Lib\Session;
 
-// Instanciation et configuration du chargeur automatique (autoload)
-$loader = new App\SAE\Lib\Psr4AutoloaderClass();
+// 1. Chargement des classes
+$loader = new Psr4AutoloaderClass();
 $loader->addNamespace('App\SAE', __DIR__ . '/../src');
 $loader->register();
 
-// Démarrage centralisé des sessions via le helper `Session`.
-// Appelé ici (après l'enregistrement de l'autoload) pour s'assurer
-// que la classe `App\SAE\Lib\Session` peut être résolue.
-// `Session::start()` vérifie `session_status()` avant d'appeler `session_start()`.
-\App\SAE\Lib\Session::start();
+// 2. Démarrage de la session
+Session::start();
 
+// =================================================================
+// SÉCURITÉ : DÉCONNEXION AUTOMATIQUE (TIMEOUT)
+// =================================================================
 
+// Durée en secondes avant déconnexion (Mettez 10 pour tester, puis 1800 pour 30min)
+$timeout_duration = 10; 
 
-
-// Récupération des paramètres depuis la requête (GET ou POST)
-$action = $_REQUEST['action'] ?? 'carte';
-$controller = $_REQUEST['controller'] ?? 'point';
-
-// si ca renvoie ca : frontController.php?action=readAll&controller=trajet
-
-// Construction dynamique du nom de classe du contrôleur
-$controllerClassName = "App\\SAE\\Controller\\controller" . ucfirst($controller);
-
-// Vérification de l’existence du contrôleur et de l’action
-if (class_exists($controllerClassName)) {
-    if (in_array($action, get_class_methods($controllerClassName))) {
-        $controller = new $controllerClassName();
-        $controller->$action();
+// Vérifier si on a une heure de dernière activité enregistrée
+if (isset($_SESSION['LAST_ACTIVITY'])) {
+    // Calculer le temps écoulé depuis la dernière action
+    $duration = time() - $_SESSION['LAST_ACTIVITY'];
+    
+    // Si le temps écoulé est supérieur à la limite
+    if ($duration > $timeout_duration) {
+        // On détruit la session
+        Session::destroy(); // Ou session_destroy();
+        session_unset();    // Vide les variables
+        
+        // On recharge la page pour appliquer la déconnexion visuellement
+        header("Location: frontController.php"); 
+        exit();
     }
 }
 
+// Mettre à jour l'heure de dernière activité à MAINTENANT
+$_SESSION['LAST_ACTIVITY'] = time();
+
+// =================================================================
+// FIN SÉCURITÉ
+// =================================================================
+
+// 3. Connexion Firebase
+$factory = (new Factory)
+    ->withServiceAccount(__DIR__ . '/../Cles/sae300-bf9d4-firebase-adminsdk-fbsvc-3f97406b36.json')
+    ->withDatabaseUri('https://sae300-bf9d4-default-rtdb.europe-west1.firebasedatabase.app/');
+
+// 4. Routage
+$controller = $_REQUEST['controller'] ?? 'point';
+$action     = $_REQUEST['action'] ?? 'carte';
+
+$controllerClassName = "App\\SAE\\Controller\\controller" . ucfirst($controller);
+
+if (class_exists($controllerClassName)) {
+    $controllerInstance = new $controllerClassName($factory);
+    
+    if (in_array($action, get_class_methods($controllerClassName))) {
+        $controllerInstance->$action();
+    } else {
+        header('Location: frontController.php?controller=point&action=carte');
+        exit();
+    }
+} else {
+    echo "Erreur : Contrôleur '$controllerClassName' introuvable.";
+}
+?>

@@ -1,57 +1,47 @@
-
-
-    <body>
-        
-        <form method="GET" action="../web/frontController.php">
-            <fieldset>
-
-                <legend>Bienvenu!</legend>
-                <p>
-                    
-                    <label for="Prenom_id">Prenom</label> :
-                    <br>
-                    <input type="text" placeholder="xxxx" name="Prenom" id="Prenom_id" required/>
-                    
-                    <label for="nom_id">Nom</label>:
-                    <br>
-                    <input type="text" placeholder="xxxx" name="nom" id="nom_id" required/>
-
-                    <label for="email_id">email</label>:
-                    <br>
-                    <input type ="text" placeholder="xxx@.com" name = "email" id="email_id" required/>
-
-                    <label for="mdp_id">Mot de passe</label>:
-                    <br>
-                    <input type ="text" placeholder="xxx" name = "mdp" id="mdp_id" required/>
-
-                    <label for="Cmdp_id">Confirmation du mot de passe</label>:
-                    <br>
-                    <input type ="text" placeholder="xxx" name = "Cmdp" id="Cmdp_id" required/>
-
-
-                    <label for="ProfilUtilisateur">Choisissez votre profil de compte </label>
-                    <br>
+<div style="max-width: 500px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <h2 style="text-align: center;">Créer un compte</h2>
     
-                    <select name="ProfilUtilisateur" id="ProfilUtilisateur">
-        
-                    <option value="Chercheur">Chercheur</option>
-        
-                    <option value="Etudiant">Etudiant</option>
-        
-                    <option value="GrandPUblic">Grand Public</option>
+    <?php if (isset($error)): ?>
+        <div style="color: white; background-color: #dc3545; padding: 10px; margin-bottom: 15px; border-radius: 4px; text-align: center;">
+            <?= htmlspecialchars($error) ?>
+        </div>
+    <?php endif; ?>
 
+    <form method="POST" action="frontController.php">
+        <fieldset style="border:none; padding:0;">
+            
+            <label>Prénom :</label>
+            <input type="text" name="Prenom" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
 
-                </select>
+            <label>Nom :</label>
+            <input type="text" name="nom" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
 
-                    
-                </p>
-                <p>
-                    <input type='hidden' name='action' value='created'>
+            <label>Email :</label>
+            <input type="email" name="email" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
 
-                    <input type="submit" value="S'inscrire" />
-                </p>
+            <label>Mot de passe :</label>
+            <input type="password" name="mdp" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
 
-                <p> Vous avez déja un compte? <a href="conection.php">Conectez-vous</p>
-            </fieldset>
-        </form>
-    </body>
+            <label>Confirmation :</label>
+            <input type="password" name="Cmdp" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+            <label>Profil :</label>
+            <select name="ProfilUtilisateur" style="width: 100%; padding: 8px; margin-bottom: 20px;">
+                <option value="GrandPublic">Grand Public</option>
+                <option value="Etudiant">Etudiant</option>
+                <option value="Chercheur">Chercheur</option>
+            </select>
+
+            <input type="hidden" name="controller" value="utilisateur">
+            <input type="hidden" name="action" value="created">
+
+            <button type="submit" style="width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Valider l'inscription
+            </button>
+        </fieldset>
+    </form>
+    
+    <p style="text-align: center; margin-top: 15px;">
+        <a href="frontController.php?controller=utilisateur&action=connexion">Déjà un compte ?</a>
+    </p>
+</div>
