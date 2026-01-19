@@ -1,47 +1,56 @@
-<div style="max-width: 500px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-    <h2 style="text-align: center;">Créer un compte</h2>
+<div class="form-card">
+    <h2>Créer un compte</h2>
     
     <?php if (isset($error)): ?>
-        <div style="color: white; background-color: #dc3545; padding: 10px; margin-bottom: 15px; border-radius: 4px; text-align: center;">
+        <div class="alert-error">
             <?= htmlspecialchars($error) ?>
         </div>
     <?php endif; ?>
 
     <form method="POST" action="frontController.php">
-        <fieldset style="border:none; padding:0;">
-            
-            <label>Prénom :</label>
-            <input type="text" name="Prenom" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+        <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" name="Prenom" placeholder="Ex: Jean" required>
+        </div>
 
-            <label>Nom :</label>
-            <input type="text" name="nom" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+        <div class="form-group">
+            <label>Nom</label>
+            <input type="text" name="nom" placeholder="Ex: Dupont" required>
+        </div>
 
-            <label>Email :</label>
-            <input type="email" name="email" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="jean@exemple.com" required>
+        </div>
 
-            <label>Mot de passe :</label>
-            <input type="password" name="mdp" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+        <div class="form-group">
+            <label>Mot de passe</label>
+            <input type="password" name="mdp" placeholder="••••••••" required>
+        </div>
 
-            <label>Confirmation :</label>
-            <input type="password" name="Cmdp" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+        <div class="form-group">
+            <label>Confirmation</label>
+            <input type="password" name="Cmdp" placeholder="••••••••" required>
+        </div>
 
-            <label>Profil :</label>
-            <select name="ProfilUtilisateur" style="width: 100%; padding: 8px; margin-bottom: 20px;">
+        <div class="form-group">
+            <label>Profil</label>
+            <select name="ProfilUtilisateur">
                 <option value="GrandPublic">Grand Public</option>
                 <option value="Etudiant">Etudiant</option>
                 <option value="Chercheur">Chercheur</option>
             </select>
+        </div>
 
-            <input type="hidden" name="controller" value="utilisateur">
-            <input type="hidden" name="action" value="created">
+        <input type="hidden" name="controller" value="utilisateur">
+        <input type="hidden" name="action" value="created">
 
-            <button type="submit" style="width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                Valider l'inscription
-            </button>
-        </fieldset>
+        <button type="submit" class="btn-submit">
+            S'inscrire
+        </button>
     </form>
     
-    <p style="text-align: center; margin-top: 15px;">
-        <a href="frontController.php?controller=utilisateur&action=connexion">Déjà un compte ?</a>
-    </p>
+    <div class="form-footer">
+        <a href="frontController.php?controller=utilisateur&action=connexion">Déjà un compte ? Connectez-vous</a>
+    </div>
 </div>

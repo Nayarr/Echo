@@ -1,28 +1,35 @@
-<body>
-    <?php if (!empty($error)): ?>
-        <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
+<div class="form-card">
+    <h2>Connexion</h2>
+    
+    <?php if (isset($error)): ?>
+        <div class="alert-error">
+            <?= htmlspecialchars($error) ?>
+        </div>
     <?php endif; ?>
 
-    <form method="POST" action="../web/frontController.php">
-        <fieldset>
-            <legend>Connexion</legend>
-            <p>
-                <label for="email_id">Email</label>:
-                <br>
-                <input type="email" name="email" id="email_id" placeholder="votre@exemple.com" required />
+    <form method="POST" action="frontController.php">
+        
+        <div class="form-group">
+            <label for="email_id">Email</label>
+            <input type="email" name="email" id="email_id" placeholder="votre@email.com" required 
+                   value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>">
+        </div>
 
-                <label for="mdp_id">Mot de passe</label>:
-                <br>
-                <input type="password" name="mdp" id="mdp_id" placeholder="mot de passe" required />
-            </p>
+        <div class="form-group">
+            <label for="mdp_id">Mot de passe</label>
+            <input type="password" name="mdp" id="mdp_id" placeholder="••••••••" required>
+        </div>
 
-            <p>
-                <input type="hidden" name="action" value="traiterConnexion">
-                <input type="hidden" name="controller" value="utilisateur">
-                <input type="submit" value="Se connecter" />
-            </p>
+        <input type="hidden" name="controller" value="utilisateur">
+        <input type="hidden" name="action" value="traiterConnexion">
 
-            <p>Pas encore de compte ? <a href="../web/frontController.php?action=inscription&controller=utilisateur">Inscrivez-vous</a></p>
-        </fieldset>
+        <button type="submit" class="btn-submit">
+            Se connecter
+        </button>
     </form>
-</body>
+
+    <div class="form-footer">
+        <p>Pas encore de compte ?</p>
+        <a href="frontController.php?controller=utilisateur&action=inscription">Créer un compte maintenant</a>
+    </div>
+</div>
