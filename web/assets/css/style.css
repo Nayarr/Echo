@@ -181,6 +181,45 @@ main.carte-view {
     border: 4px solid white; /* Bordure blanche pour effet cadre photo */
 }
 
+/* --- BOUTON FAVORI (COEUR) --- */
+.btn-fav {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 50%; /* Rond parfait */
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-size: 20px;
+    color: #ccc; /* Gris quand pas favori */
+}
+
+.btn-fav:hover {
+    transform: scale(1.1);
+}
+
+/* Quand le coeur est activé (classe "active") */
+.btn-fav.active {
+    color: #ff4757; /* Rouge */
+    border-color: #ff4757;
+    background-color: #fff0f1;
+}
+
+/* Animation de battement quand on clique */
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.btn-fav.active i {
+    animation: heartBeat 0.3s ease-in-out;
+}
+
 /* =========================================
    4. FORMULAIRES (Inscription / Connexion)
    ========================================= */

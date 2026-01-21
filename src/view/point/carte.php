@@ -143,3 +143,60 @@ map.on('click', async (e) => {
   }
 });
 </script>
+
+<div id="point-details" style="display:none; padding: 20px; background: white; border-radius: 20px; position: fixed; bottom: 20px; left: 20px; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 id="detail-title">Nom du point</h3>
+        
+        <button id="fav-btn" class="btn-fav" onclick="toggleFavori()">
+            ♥ </button>
+    </div>
+    
+    <p id="detail-desc">Description...</p>
+</div>
+
+<script>
+    // Variable globale pour stocker l'ID du point actuel affiché
+    let currentPointId = null;
+
+    // Fonction appelée quand on clique sur le coeur
+    function toggleFavori() {
+        if (!currentPointId) return;
+
+        const btn = document.getElementById('fav-btn');
+
+        // Appel AJAX vers votre contrôleur PHP
+        fetch(`frontController.php?controller=utilisateur&action=toggleFavori&id_point=${currentPointId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Si ajouté, on met la classe active (rouge)
+                    if (data.action === 'added') {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                } else {
+                    alert("Erreur : " + data.message); // Probablement pas connecté
+                }
+            })
+            .catch(error => console.error('Erreur:', error));
+    }
+
+    // Fonction fictive pour simuler l'ouverture d'un point sur la carte
+    // Vous devez appeler ça quand on clique sur un marqueur de la carte
+    function openPointDetails(id, name, isFavorite) {
+        currentPointId = id;
+        document.getElementById('detail-title').innerText = name;
+        document.getElementById('point-details').style.display = 'block';
+
+        // Gérer l'état initial du bouton (si c'est déjà un favori ou pas)
+        const btn = document.getElementById('fav-btn');
+        if (isFavorite) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    }
+</script>

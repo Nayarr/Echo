@@ -138,10 +138,49 @@ class controllerUtilisateur
         }
     }
 
+     public function toggleFavori(): void {
+        // 1. Vérifier si connecté
+        if (!isset($_SESSION['user_uid'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Non connecté']);
+            return;
+        }
+
+        $uid = $_SESSION['user_uid'];
+        $pointId = $_GET['id_point'] ?? null;
+
+        if (!$pointId) {
+            echo json_encode(['status' => 'error', 'message' => 'ID manquant']);
+            return;
+        }
+
+        // 2. Chemin vers le favori spécifique dans Firebase
+        // Exemple : users/uid123/favoris/14
+        $reference = $this->database->getReference("users/$uid/favoris/$pointId");
+        
+        // 3. Vérifier s'il existe déjà
+        $snapshot = $reference->getSnapshot();
+
+        if ($snapshot->exists()) {
+            // IL EXISTE -> ON LE SUPPRIME
+            $reference->remove();
+            $action = 'removed';
+        } else {
+            // IL N'EXISTE PAS -> ON L'AJOUTE (On met 'true' ou la date)
+            $reference->set(time());
+            $action = 'added';
+        }
+
+        // 4. Répondre en JSON pour le JavaScript
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'success', 'action' => $action]);
+        exit(); // Important pour ne pas charger de vue HTML
+    }
+
     public function logout(): void {
         Session::destroy();
         header('Location: frontController.php?controller=point&action=carte');
         exit();
     }
 }
+   
 ?>
