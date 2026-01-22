@@ -245,7 +245,7 @@ class controllerPoint
 
             if (!$point || !isset($point['id_point'])) {
                 // Aucun point trouvé - afficher un message d'erreur
-                ControllerPoint::afficheVue('point/view.php', [
+                self::afficheVue('point/view.php', [
                     "pagetitle" => "Point non trouvé",
                     "cheminVueBody" => "erreur_point.php",
                     "message" => "Aucun point trouvé dans un rayon de {$radius} km autour des coordonnées Lat: {$lat}, Lon: {$lon}"
@@ -258,7 +258,7 @@ class controllerPoint
             self::detail();
 
         } catch (\Throwable $e) {
-            ControllerPoint::afficheVue('point/view.php', [
+            self::afficheVue('point/view.php', [
                 "pagetitle" => "Erreur",
                 "cheminVueBody" => "erreur_point.php",
                 "message" => "Erreur lors de la recherche du point"
