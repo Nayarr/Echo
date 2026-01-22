@@ -58,7 +58,7 @@ $factory = (new Factory)
 
 // 4. Routage
 $controller = $_REQUEST['controller'] ?? 'point';
-$action     = $_REQUEST['action'] ?? 'carte';
+$action     = $_REQUEST['action'] ?? 'accueil';
 
 $controllerClassName = "App\\SAE\\Controller\\controller" . ucfirst($controller);
 
