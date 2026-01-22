@@ -27,7 +27,6 @@ main.carte-view {
   color: #ffffff !important;
 }
 
-
 /* Popup tip (the little triangle) should match background */
 .maplibregl-popup-tip {
   border-top-color: #2b2b2b !important;
@@ -53,36 +52,9 @@ main.carte-view {
 
 <div id="map"></div>
 
-<!-- Navigate by ID -->
-<div class="nav-box nav-box-id">
-  <h4>Accès par ID</h4>
-  <form method="GET" action="<?= $baseURL ?>">
-    <input type="hidden" name="controller" value="point">
-    <input type="hidden" name="action" value="detail">
-    <input type="number" name="id" placeholder="ID du point" required>
-    <button type="submit">Voir le point</button>
-  </form>
-</div>
-
-<!-- Navigate by coordinates -->
-<div class="nav-box nav-box-coords">
-  <h4>Accès par coordonnées</h4>
-  <form method="GET" action="<?= $baseURL ?>">
-    <input type="hidden" name="controller" value="point">
-    <input type="hidden" name="action" value="rechercheParCoordonnees">
-    <div class="input-group">
-      <input type="number" name="lat" placeholder="Latitude" step="any" required>
-      <input type="number" name="lon" placeholder="Longitude" step="any" required>
-    </div>
-    <button type="submit">Voir le point</button>
-  </form>
-</div>
-
 <script src="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.js"></script>
 
 <script>
-// baseURL fourni par PHP pour construire les liens vers frontController
-const baseURL = '<?= $baseURL ?>';
 const map = new maplibregl.Map({
   container: 'map',
   style: 'https://demotiles.maplibre.org/style.json',
@@ -164,8 +136,6 @@ map.on('click', async (e) => {
         Lat: ${data.latitude}<br>
         Lon: ${data.longitude}<br>
         Distance: ${data.distance.toFixed(2)} km
-        <br><br>
-        <a href="${baseURL}?action=detail&controller=point&id=${data.id_point}">Voir le détail</a>
       `)
       .addTo(map);
   } catch (err) {
