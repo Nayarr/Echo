@@ -35,6 +35,16 @@ class controllerPoint
         require __DIR__ . "/../view/$cheminVue";
     }
 
+    /**
+     * Page d'accueil
+     */
+    public static function accueil(): void {
+        self::afficheVue('accueil/view.php', [
+            "pagetitle" => "Accueil",
+            "cheminVueBody" => "index.php"
+        ]);
+    }
+
     // 2. La fonction carte optimisée
     public function carte(): void {
         $favorisList = [];
