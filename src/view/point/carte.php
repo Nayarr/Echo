@@ -27,6 +27,7 @@ main.carte-view {
   color: #ffffff !important;
 }
 
+
 /* Popup tip (the little triangle) should match background */
 .maplibregl-popup-tip {
   border-top-color: #2b2b2b !important;
@@ -52,9 +53,36 @@ main.carte-view {
 
 <div id="map"></div>
 
+<!-- Navigate by ID -->
+<div class="nav-box nav-box-id">
+  <h4>Accès par ID</h4>
+  <form method="GET" action="<?= $baseURL ?>">
+    <input type="hidden" name="controller" value="point">
+    <input type="hidden" name="action" value="detail">
+    <input type="number" name="id" placeholder="ID du point" required>
+    <button type="submit">Voir le point</button>
+  </form>
+</div>
+
+<!-- Navigate by coordinates -->
+<div class="nav-box nav-box-coords">
+  <h4>Accès par coordonnées</h4>
+  <form method="GET" action="<?= $baseURL ?>">
+    <input type="hidden" name="controller" value="point">
+    <input type="hidden" name="action" value="rechercheParCoordonnees">
+    <div class="input-group">
+      <input type="number" name="lat" placeholder="Latitude" step="any" required>
+      <input type="number" name="lon" placeholder="Longitude" step="any" required>
+    </div>
+    <button type="submit">Voir le point</button>
+  </form>
+</div>
+
 <script src="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.js"></script>
 
 <script>
+// baseURL fourni par PHP pour construire les liens vers frontController
+const baseURL = '<?= $baseURL ?>';
 const map = new maplibregl.Map({
   container: 'map',
   style: 'https://demotiles.maplibre.org/style.json',
@@ -136,67 +164,12 @@ map.on('click', async (e) => {
         Lat: ${data.latitude}<br>
         Lon: ${data.longitude}<br>
         Distance: ${data.distance.toFixed(2)} km
+        <br><br>
+        <a href="${baseURL}?action=detail&controller=point&id=${data.id_point}">Voir le détail</a>
       `)
       .addTo(map);
   } catch (err) {
     console.error("Erreur nearest point :", err);
   }
 });
-</script>
-
-<div id="point-details" style="display:none; padding: 20px; background: white; border-radius: 20px; position: fixed; bottom: 20px; left: 20px; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-    
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 id="detail-title">Nom du point</h3>
-        
-        <button id="fav-btn" class="btn-fav" onclick="toggleFavori()">
-            ♥ </button>
-    </div>
-    
-    <p id="detail-desc">Description...</p>
-</div>
-
-<script>
-    // Variable globale pour stocker l'ID du point actuel affiché
-    let currentPointId = null;
-
-    // Fonction appelée quand on clique sur le coeur
-    function toggleFavori() {
-        if (!currentPointId) return;
-
-        const btn = document.getElementById('fav-btn');
-
-        // Appel AJAX vers votre contrôleur PHP
-        fetch(`frontController.php?controller=utilisateur&action=toggleFavori&id_point=${currentPointId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Si ajouté, on met la classe active (rouge)
-                    if (data.action === 'added') {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                } else {
-                    alert("Erreur : " + data.message); // Probablement pas connecté
-                }
-            })
-            .catch(error => console.error('Erreur:', error));
-    }
-
-    // Fonction fictive pour simuler l'ouverture d'un point sur la carte
-    // Vous devez appeler ça quand on clique sur un marqueur de la carte
-    function openPointDetails(id, name, isFavorite) {
-        currentPointId = id;
-        document.getElementById('detail-title').innerText = name;
-        document.getElementById('point-details').style.display = 'block';
-
-        // Gérer l'état initial du bouton (si c'est déjà un favori ou pas)
-        const btn = document.getElementById('fav-btn');
-        if (isFavorite) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    }
 </script>

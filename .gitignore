@@ -1,5 +1,5 @@
-Cles/*.json
+var/log/api_errors.log
 /vendor/
-composer.json
 composer.lock
-src/.DS_Store
+composer.json
+/Cles/
