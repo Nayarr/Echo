@@ -274,27 +274,6 @@ main.carte-view {
   white-space: nowrap;
 }
 
-.nav-box {
-    position: absolute;
-    left: 10px;
-    z-index: 9999;
-    background: rgba(43, 43, 43, 0.9);
-    padding: 6px 10px;
-    border-radius: 4px;
-}
-
-.nav-box h4 {
-    color: white;
-}
-
-.nav-box-id {
-    bottom: 90px;
-}
-
-.nav-box-coords {
-    bottom: 250px;
-}
-
 /* --- Conteneur principal --- */
 .container {
     height: 210px;
