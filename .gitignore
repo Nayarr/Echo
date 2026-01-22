@@ -1,1 +1,5 @@
 var/log/api_errors.log
+/vendor/
+composer.lock
+composer.json
+/Cles/
