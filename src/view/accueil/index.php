@@ -17,14 +17,9 @@
         </div>
 
         <div class="accueilbtn">
-            <a href="<?= $baseURL ?>?action=carte&controller=point" class="signin">Carte</a>
-            
-            <a href="<?= $baseURL ?>?action=accueil" class="signup">Sign In</a>
-            <button class="button type1">
-            <span class="btn-txt"
-                >Accéder à <br/>
-                la carte</span>
-</button>
+            <a href="<?= $baseURL ?>?action=carte&controller=point" class="button type1">
+                <span class="btn-txt">Accéder à la carte</span>
+            </a>
 
 
         </div>

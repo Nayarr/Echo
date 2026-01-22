@@ -9,6 +9,7 @@
     <?php endif; ?>
 </head>
 <body>
+<div class="bg-section">
 <header>
     <a href="<?= $baseURL ?>?action=accueil" class="homebtn">
     <img src="/Echo/web/assets/img/LogoEcho2.png" alt="Logo Echo">
@@ -35,7 +36,7 @@
                     ></path>
                 </g>
                 </svg>
-                <p>Connexion</p>
+                <span>Connexion</span>
             </div>
         </a>
 
@@ -92,5 +93,6 @@
         </div>
     </div>
 </footer>
+</div>
 </body>
 </html>

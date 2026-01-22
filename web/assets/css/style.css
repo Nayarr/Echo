@@ -4,8 +4,18 @@ body {
     color: #222;
     margin: 0;
     width: 100%;
+    background: none;
+    position: relative;
 }
 
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url("/Echo/web/assets/img/BGDesign2.png") center / cover no-repeat;
+  z-index: -100;          /* derrière TOUT */
+  pointer-events: none;
+}
 
 
 .video-bg {
@@ -47,7 +57,7 @@ header {
     z-index: 100; 
     
     /* 4. Mise en forme standard */
-    padding: 10px 5px; /* Un peu plus d'espace pour faire joli */
+    padding: 10px 45px; /* Un peu plus d'espace pour faire joli */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -56,14 +66,13 @@ header {
 
 header img {
     width: 65px;
-    margin-left: 30%;
     margin-top: 21%;
 
 }
 
-a {
-    margin-right: 55px;
-}
+a { margin-right: 0; }     
+nav { gap: 20px; }          
+
 
 
 h1 {
@@ -461,6 +470,9 @@ fieldset {
   display: flex;
   align-items: center;
   justify-content: center;
+  text-decoration: none;
+  color: inherit;
+  margin-right: 0;
 }
 
 .user-profile:hover,
@@ -481,61 +493,84 @@ fieldset {
   gap: 15px;
   color: #fff;
   font-weight: 600;
+  margin: 0;
+  line-height: 1;
 }
 
 .user-profile-inner svg {
   width: 27px;
   height: 27px;
   margin-right: -10px;
+  padding-top: 2%;
   fill: #fff;
+  display: block;
 }
 
 
-/*Bouton Carte*/
 
-.button {
+/* Bouton Carte */
+a.button {
   height: 50px;
   width: 200px;
   position: relative;
-  background-color: transparent;
+  background: transparent;
   cursor: pointer;
-  border: 2px solid #ffffff;
+  border: 2px solid #fff;
   overflow: hidden;
   border-radius: 30px;
-  color: #ffffff;
+  color: #fff;
   transition: all 0.5s ease-in-out;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  text-decoration: none;
+  margin-right: 0; 
+  z-index: 0;
 }
 
-.btn-txt {
+a.button:hover,
+a.button:focus,
+a.button:visited,
+a.button:active {
+  text-decoration: none;
+  color: #fff;
+  outline: none;
+}
+
+a.button .btn-txt {
   z-index: 1;
-  font-weight: 800;
-  letter-spacing: 4px;
+  font-weight: 550;
+  letter-spacing: 0.5px;
+  text-align: center;
+  line-height: 1.05;
 }
 
-.type1::after {
+/* fond animé */
+a.button.type1::after{
   content: "";
   position: absolute;
-  left: 0;
-  top: 0;
-  transition: all 0.5s ease-in-out;
-  background-color: #1a1a1a;
-  border-radius: 30px;
-  visibility: hidden;
-  height: 10px;
-  width: 10px;
+  inset: 0;
+  background: rgba(0, 14, 93, 0.7);
+  border-radius: inherit;
+
+  /* arrive depuis le coin haut-gauche */
+  transform: translate(-110%);
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+
   z-index: -1;
 }
 
-.button:hover {
-  box-shadow: 1px 1px 200px #252525;
-  color: #fff;
-  border: none;
+a.button.type1:hover::after{
+  transform: translate(0, 0);
 }
 
-.type1:hover::after {
-  visibility: visible;
-  transform: scale(100) translateX(2px);
+a.button:hover {
+  box-shadow: 1px 1px 200px #252525;
+  border-color: transparent;
 }
+
 
 
 
