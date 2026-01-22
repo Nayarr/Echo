@@ -159,8 +159,15 @@ abstract class AbstractRepository
         // On récupère les valeurs à insérer via formatTableau()
         $data = $objet->formatTableau();
 
-        // Exécution de l'INSERT
-        $statement->execute($data);
+        // Filtrer les données pour ne garder que les colonnes attendues
+        $params = [];
+        foreach ($colonnes as $col) {
+            // si la clé est absente on fournit NULL pour éviter les erreurs
+            $params[$col] = array_key_exists($col, $data) ? $data[$col] : null;
+        }
+
+        // Exécution de l'INSERT avec les paramètres filtrés
+        $statement->execute($params);
     }
 
 
@@ -219,7 +226,13 @@ abstract class AbstractRepository
 
         $valeurs = $objet->formatTableau();
 
-        $pdoStatement->execute($valeurs);
+        // Filtrer les valeurs pour correspondre aux placeholders
+        $params = [];
+        foreach ($colonnes as $col) {
+            $params[$col] = array_key_exists($col, $valeurs) ? $valeurs[$col] : null;
+        }
+
+        $pdoStatement->execute($params);
     }
 
 }
