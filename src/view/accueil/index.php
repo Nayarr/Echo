@@ -1,32 +1,32 @@
 <body>
 
-    <div class="background"></div>
-    <div class="vagues">
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 1500 660"
-        fill="none"
-        class="wave-svg"
-    >
-        <path d="M0 68.4169C0 68.4169 243.56 -25.9033 370.635 26.2738C497.71 78.451 621.671 94.0225 758.09 68.4169C894.508 42.8113 972.996 -41.4561 1131.84 26.2738C1290.68 94.0037 1495 68.4169 1495 68.4169" stroke="white"/>
-        <path d="M1494.43 185.645C1494.43 185.645 1250.03 119.712 1123.65 160.169C997.279 200.627 873.604 214.01 737.019 197.18C600.433 180.351 521.068 119.328 363.127 171.752C205.186 224.176 0.763659 208.393 0.763659 208.393" stroke="white"/>
-        <path d="M11 364.417C11 364.417 254.56 270.097 381.635 322.274C508.71 374.451 632.671 390.023 769.09 364.417C905.508 338.811 983.996 254.544 1142.84 322.274C1301.68 390.004 1506 364.417 1506 364.417" stroke="white"/>
-    </svg>
-    </div>
-
     <div class="page1">
+        <video autoplay muted loop playsinline class="video-bg">
+        <source src="/Echo/web/assets/video/Wavy.mp4" type="video/mp4">
+        Votre navigateur ne supporte pas la vidéo HTML5.
+        </video>
+
+        <div class="video-overlay"></div>
+
         <div class="titre">
-            <h1>Echo</h1>
+            <img width="40%" height="auto" src="/Echo/web/assets/img/Logo4.png" alt="Main Logo Site" class="Logo1">
         </div>
 
         <div class="sous_titre">
-            <h3>Votre solution de visualisation de données marine</h3>
+            <img width="35%" height="auto" src="/Echo/web/assets/img/Logo4Subtitle.png" alt="Sous-Titre Logo" class="Logo">
         </div>
 
         <div class="accueilbtn">
             <a href="<?= $baseURL ?>?action=carte&controller=point" class="signin">Carte</a>
             
             <a href="<?= $baseURL ?>?action=accueil" class="signup">Sign In</a>
+            <button class="button type1">
+            <span class="btn-txt"
+                >Accéder à <br/>
+                la carte</span>
+</button>
+
+
         </div>
     </div>
 
