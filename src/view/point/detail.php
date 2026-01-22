@@ -47,6 +47,57 @@
 			</p>
 		</div>
 	<?php else: ?>
+
+	
+			<div style="margin-top: 30px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0;">
+			<h3 style="margin-top: 0; margin-bottom: 15px; color: #424242; font-size: 1.2em;">
+				📥 Exporter les données
+			</h3>
+			<p style="color: #666; margin-bottom: 15px; font-size: 0.95em;">
+				Téléchargez les données de cette période d'analyse au format de votre choix :
+			</p>
+			<div style="display: flex; gap: 15px; flex-wrap: wrap;">
+				<!-- Export CSV -->
+				<form method="GET" action="<?= $baseURL ?>" style="margin: 0;">
+					<input type="hidden" name="controller" value="point">
+					<input type="hidden" name="action" value="exportCSV">
+					<input type="hidden" name="id" value="<?= intval($id_point ?? 0) ?>">
+					<input type="hidden" name="years" value="<?= intval($nombreAnneesSelectionnees ?? 1) ?>">
+					<button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s;">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+							<polyline points="14 2 14 8 20 8"></polyline>
+							<line x1="12" y1="18" x2="12" y2="12"></line>
+							<line x1="9" y1="15" x2="15" y2="15"></line>
+						</svg>
+						Exporter CSV
+					</button>
+				</form>
+
+				<!-- Export JSON -->
+				<form method="GET" action="<?= $baseURL ?>" style="margin: 0;">
+					<input type="hidden" name="controller" value="point">
+					<input type="hidden" name="action" value="exportJSON">
+					<input type="hidden" name="id" value="<?= intval($id_point ?? 0) ?>">
+					<input type="hidden" name="years" value="<?= intval($nombreAnneesSelectionnees ?? 1) ?>">
+					<button type="submit" style="padding: 10px 20px; background-color: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s;">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+							<polyline points="14 2 14 8 20 8"></polyline>
+							<path d="M10 12h4"></path>
+							<path d="M10 16h4"></path>
+						</svg>
+						Exporter JSON
+					</button>
+				</form>
+			</div>
+			<div style="margin-top: 12px;">
+				<small style="color: #999; font-size: 0.85em;">
+					💡 CSV pour Excel/tableurs • JSON pour applications • NetCDF pour analyses scientifiques
+				</small>
+			</div>
+		</div>			
+
 		
 		<?php 
 		// Noms français pour les variables

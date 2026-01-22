@@ -27,6 +27,7 @@ main.carte-view {
   color: #ffffff !important;
 }
 
+
 /* Popup tip (the little triangle) should match background */
 .maplibregl-popup-tip {
   border-top-color: #2b2b2b !important;
@@ -51,6 +52,31 @@ main.carte-view {
 </style>
 
 <div id="map"></div>
+
+<!-- Navigate by ID -->
+<div class="nav-box nav-box-id">
+  <h4>Accès par ID</h4>
+  <form method="GET" action="<?= $baseURL ?>">
+    <input type="hidden" name="controller" value="point">
+    <input type="hidden" name="action" value="detail">
+    <input type="number" name="id" placeholder="ID du point" required>
+    <button type="submit">Voir le point</button>
+  </form>
+</div>
+
+<!-- Navigate by coordinates -->
+<div class="nav-box nav-box-coords">
+  <h4>Accès par coordonnées</h4>
+  <form method="GET" action="<?= $baseURL ?>">
+    <input type="hidden" name="controller" value="point">
+    <input type="hidden" name="action" value="rechercheParCoordonnees">
+    <div class="input-group">
+      <input type="number" name="lat" placeholder="Latitude" step="any" required>
+      <input type="number" name="lon" placeholder="Longitude" step="any" required>
+    </div>
+    <button type="submit">Voir le point</button>
+  </form>
+</div>
 
 <script src="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.js"></script>
 

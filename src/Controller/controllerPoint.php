@@ -233,6 +233,167 @@ class controllerPoint
         ]);
     }
 
+    public static function rechercheParCoordonnees(): void
+    {
+        $lat = floatval($_GET["lat"] ?? 0);
+        $lon = floatval($_GET["lon"] ?? 0);
+        $radius = 8; // km
+
+        try {
+            $repo = new PointRepository();
+            $point = $repo->trouverPointLePlusProche($lat, $lon, $radius);
+
+            if (!$point || !isset($point['id_point'])) {
+                // Aucun point trouvé - afficher un message d'erreur
+                ControllerPoint::afficheVue('point/view.php', [
+                    "pagetitle" => "Point non trouvé",
+                    "cheminVueBody" => "erreur_point.php",
+                    "message" => "Aucun point trouvé dans un rayon de {$radius} km autour des coordonnées Lat: {$lat}, Lon: {$lon}"
+                ]);
+                return;
+            }
+
+            // Appeler directement la méthode detail en modifiant $_GET
+            $_GET['id'] = $point['id_point'];
+            self::detail();
+
+        } catch (\Throwable $e) {
+            ControllerPoint::afficheVue('point/view.php', [
+                "pagetitle" => "Erreur",
+                "cheminVueBody" => "erreur_point.php",
+                "message" => "Erreur lors de la recherche du point"
+            ]);
+        }
+    }
+
+    /**
+ * Export des données au format CSV
+ */
+public static function exportCSV(): void
+{
+    $idPoint = intval($_GET['id'] ?? 0);
+    $nombreAnnees = intval($_GET['years'] ?? 1);
+    
+    if ($idPoint <= 0) {
+        http_response_code(400);
+        echo "ID invalide";
+        return;
+    }
+
+    try {
+        $depot = new PointRepository();
+        $objetPoint = $depot->select((string)$idPoint);
+        
+        if (!$objetPoint) {
+            http_response_code(404);
+            echo "Point non trouvé";
+            return;
+        }
+
+        $latitude = $objetPoint->getLatitude();
+        $longitude = $objetPoint->getLongitude();
+        $dateDebut = date('Y-m-d', strtotime("-{$nombreAnnees} years"));
+        $dateFin = date('Y-m-d');
+
+        $analyse = $depot->obtenirAnalysePoint($latitude, $longitude, $dateDebut, $dateFin);
+
+        if (!$analyse['succes']) {
+            http_response_code(500);
+            echo "Erreur lors de la récupération des données";
+            return;
+        }
+
+        // Générer le CSV
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="point_' . $idPoint . '_' . $dateDebut . '_' . $dateFin . '.csv"');
+        
+        $output = fopen('php://output', 'w');
+        
+        // En-têtes
+        fputcsv($output, ['Date', 'Salinité (PSU)', 'Température (°C)']);
+        
+        // Données
+        foreach ($analyse['donneesGraphique'] as $ligne) {
+            fputcsv($output, [
+                $ligne['date'],
+                $ligne['valeurs']['so'] ?? '',
+                $ligne['valeurs']['thetao'] ?? ''
+            ]);
+        }
+        
+        fclose($output);
+        exit();
+
+    } catch (\Throwable $e) {
+        http_response_code(500);
+        echo "Erreur: " . $e->getMessage();
+    }
+}
+
+    /**
+     * Export des données au format JSON
+     */
+    public static function exportJSON(): void
+    {
+        $idPoint = intval($_GET['id'] ?? 0);
+        $nombreAnnees = intval($_GET['years'] ?? 1);
+        
+        if ($idPoint <= 0) {
+            http_response_code(400);
+            echo json_encode(["error" => "ID invalide"]);
+            return;
+        }
+
+        try {
+            $depot = new PointRepository();
+            $objetPoint = $depot->select((string)$idPoint);
+            
+            if (!$objetPoint) {
+                http_response_code(404);
+                echo json_encode(["error" => "Point non trouvé"]);
+                return;
+            }
+
+            $latitude = $objetPoint->getLatitude();
+            $longitude = $objetPoint->getLongitude();
+            $dateDebut = date('Y-m-d', strtotime("-{$nombreAnnees} years"));
+            $dateFin = date('Y-m-d');
+
+            $analyse = $depot->obtenirAnalysePoint($latitude, $longitude, $dateDebut, $dateFin);
+
+            if (!$analyse['succes']) {
+                http_response_code(500);
+                echo json_encode(["error" => "Erreur lors de la récupération des données"]);
+                return;
+            }
+
+            // Préparer les données JSON
+            $export = [
+                'metadata' => [
+                    'point_id' => $idPoint,
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
+                    'date_debut' => $dateDebut,
+                    'date_fin' => $dateFin,
+                    'export_date' => date('Y-m-d H:i:s')
+                ],
+                'statistiques' => $analyse['statistiques'],
+                'moyennes_saisonnieres' => $analyse['moyennesSaisonnieres'],
+                'donnees' => $analyse['donneesGraphique']
+            ];
+
+            header('Content-Type: application/json; charset=utf-8');
+            header('Content-Disposition: attachment; filename="point_' . $idPoint . '_' . $dateDebut . '_' . $dateFin . '.json"');
+            
+            echo json_encode($export, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            exit();
+
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            echo json_encode(["error" => $e->getMessage()]);
+        }
+    }
+
     /**
      * Méthode utilitaire pour logger les erreurs
      */
