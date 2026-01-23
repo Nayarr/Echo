@@ -72,7 +72,7 @@
                                             $stats = $donneesParSaison[$saison][$cleVariable];
                                     ?>
                                         <div>
-                                            <div style="font-size: 14px; margin-bottom: 8px;">
+                                            <div class="season-metric-label">
                                                 <?= htmlspecialchars($labelsFrancais[$cleVariable] ?? $nomsFrancaisVariables[$cleVariable] ?? $cleVariable) ?>
                                             </div>
                                             <div class="season-metric-value">
@@ -161,129 +161,119 @@
                 <div class="evolution-section">
                     <!-- Graphique d'évolution -->
                     <?php if (!empty($donneesAnnuelles)): ?>
-                    <div style="margin-top: 20px; max-width: 900px;">
-                        <canvas id="graphique-evolution" style="max-height: 400px;"></canvas>
+                    <div class="chart-container">
+                        <canvas id="graphique-evolution"></canvas>
                     </div>
 
                     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
                     <script>
-                    // Données PHP converties en JavaScript
-                    const donneesAnnuelles = <?= json_encode($donneesAnnuelles) ?>;
-                    const nomsFrancaisVariables = <?= json_encode($nomsFrancaisVariables) ?>;
-                    const unitesVariables = <?= json_encode($unitesVariables) ?>;
+// Données PHP converties en JavaScript
+const donneesAnnuelles = <?= json_encode($donneesAnnuelles) ?>;
+const nomsFrancaisVariables = <?= json_encode($nomsFrancaisVariables) ?>;
+const unitesVariables = <?= json_encode($unitesVariables) ?>;
 
-                    // Préparer les datasets pour Chart.js
-                    const ensemblesDonnees = [];
-                    const couleurs = {
-                        'so': {bordure: 'rgb(54, 162, 235)', fond: 'rgba(54, 162, 235, 0.1)'},
-                        'thetao': {bordure: 'rgb(255, 99, 132)', fond: 'rgba(255, 99, 132, 0.1)'}
-                    };
+const etiquettes = [...new Set(donneesAnnuelles.map(d => d.date))].sort();
+const variables = Object.keys(donneesAnnuelles[0]?.valeurs || {});
 
-                    // Extraire les labels (dates uniques)
-                    const etiquettes = [...new Set(donneesAnnuelles.map(d => d.date))].sort();
+const contexte = document.getElementById('graphique-evolution').getContext('2d');
 
-                    // Créer un dataset par variable
-                    const variables = Object.keys(donneesAnnuelles[0]?.valeurs || {});
-                    
-                    variables.forEach(cleVariable => {
-                        const donnees = etiquettes.map(date => {
-                            const entree = donneesAnnuelles.find(d => d.date === date);
-                            return entree?.valeurs[cleVariable] ?? null;
-                        });
+// Fonction pour créer un dégradé élégant
+function createGradient(ctx, color) {
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, color.replace('rgb', 'rgba').replace(')', ', 0.3)'));
+    gradient.addColorStop(1, color.replace('rgb', 'rgba').replace(')', ', 0.0)'));
+    return gradient;
+}
 
-                        ensemblesDonnees.push({
-                            label: nomsFrancaisVariables[cleVariable] || cleVariable,
-                            data: donnees,
-                            borderColor: couleurs[cleVariable]?.bordure || 'rgb(75, 192, 192)',
-                            backgroundColor: couleurs[cleVariable]?.fond || 'rgba(75, 192, 192, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.1,
-                            yAxisID: cleVariable // Un axe Y par variable
-                        });
-                    });
+const couleurs = {
+    'so': 'rgb(54, 162, 235)',     // Bleu Océan
+    'thetao': 'rgb(255, 99, 132)'  // Corail/Rouge
+};
 
-                    // Créer le graphique
-                    const contexte = document.getElementById('graphique-evolution').getContext('2d');
-                    const graphique = new Chart(contexte, {
-                        type: 'line',
-                        data: {
-                            labels: etiquettes,
-                            datasets: ensemblesDonnees
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: true,
-                            interaction: {
-                                mode: 'index',
-                                intersect: false,
-                            },
-                            plugins: {
-                                title: {
-                                    display: true,
-                                    text: 'Évolution des mesures océanographiques'
-                                },
-                                legend: {
-                                    display: true,
-                                    position: 'top'
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(context) {
-                                            const cleVariable = context.dataset.yAxisID;
-                                            const unite = unitesVariables[cleVariable] || '';
-                                            return context.dataset.label + ': ' + context.parsed.y.toFixed(4) + ' ' + unite;
-                                        }
-                                    }
-                                }
-                            },
-                            scales: {
-                                x: {
-                                    display: true,
-                                    title: {
-                                        display: true,
-                                        text: 'Date'
-                                    },
-                                    ticks: {
-                                        maxTicksLimit: 20,
-                                        maxRotation: 45,
-                                        minRotation: 45
-                                    }
-                                },
-                                // Axe Y pour la salinité
-                                so: {
-                                    type: 'linear',
-                                    display: variables.includes('so'),
-                                    position: 'left',
-                                    title: {
-                                        display: true,
-                                        text: 'Salinité (PSU)',
-                                        color: couleurs.so?.bordure
-                                    },
-                                    ticks: {
-                                        color: couleurs.so?.bordure
-                                    }
-                                },
-                                // Axe Y pour la température
-                                thetao: {
-                                    type: 'linear',
-                                    display: variables.includes('thetao'),
-                                    position: 'right',
-                                    title: {
-                                        display: true,
-                                        text: 'Température (°C)',
-                                        color: couleurs.thetao?.bordure
-                                    },
-                                    ticks: {
-                                        color: couleurs.thetao?.bordure
-                                    },
-                                    grid: {
-                                        drawOnChartArea: false
-                                    }
-                                }
-                            }
-                        }
-                    });
-                    </script>
+const ensemblesDonnees = variables.map(cleVariable => {
+    const color = couleurs[cleVariable] || 'rgb(75, 192, 192)';
+    
+    return {
+        label: nomsFrancaisVariables[cleVariable] || cleVariable,
+        data: etiquettes.map(date => {
+            const entree = donneesAnnuelles.find(d => d.date === date);
+            return entree?.valeurs[cleVariable] ?? null;
+        }),
+        borderColor: color,
+        backgroundColor: createGradient(contexte, color),
+        borderWidth: 3,
+        fill: true,            // Active le remplissage sous la courbe
+        tension: 0.4,          // Rend les lignes courbes (Spline)
+        pointRadius: 0,        // Cache les points par défaut
+        pointHoverRadius: 6,   // Affiche un gros point au survol
+        pointBackgroundColor: color,
+        yAxisID: cleVariable
+    };
+});
+
+const graphique = new Chart(contexte, {
+    type: 'line',
+    data: {
+        labels: etiquettes,
+        datasets: ensemblesDonnees
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        padding: 20,
+        interaction: {
+            mode: 'index',
+            intersect: false,
+        },
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    usePointStyle: true, // Légende avec des cercles au lieu de carrés
+                    padding: 20,
+                    font: { size: 13, weight: 'bold' }
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                titleColor: '#333',
+                bodyColor: '#666',
+                borderColor: '#ddd',
+                borderWidth: 1,
+                padding: 12,
+                displayColors: true,
+                callbacks: {
+                    label: function(context) {
+                        const cleVariable = context.dataset.yAxisID;
+                        const unite = unitesVariables[cleVariable] || '';
+                        return ` ${context.dataset.label}: ${context.parsed.y.toFixed(3)} ${unite}`;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                grid: { display: false }, // Supprime les lignes verticales pour un look plus propre
+                ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 10 }
+            },
+            so: {
+                type: 'linear',
+                display: variables.includes('so'),
+                position: 'left',
+                title: { display: true, text: 'Salinité (PSU)', font: { weight: 'bold' } },
+                grid: { color: 'rgba(0, 0, 0, 0.05)' }
+            },
+            thetao: {
+                type: 'linear',
+                display: variables.includes('thetao'),
+                position: 'right',
+                title: { display: true, text: 'Température (°C)', font: { weight: 'bold' } },
+                grid: { drawOnChartArea: false } // Évite la superposition des grilles
+            }
+        }
+    }
+});
+</script>
                     <?php endif; ?>
                 </div>
             </div>
@@ -292,7 +282,7 @@
                     <h2>Moyenne</h2>
                     <p class="average-note">L'écart-type (σ) mesure la variabilité : plus il est élevé, plus les valeurs fluctuent.</p>
                 </div>
-                <div class="card average-section">
+                <div class="card">
                 <div class="average-section">
                     <?php if (empty($moyennesAnnuelles)): ?>
                     <p>Aucune donnée disponible pour calculer les moyennes sur cette période.</p>
@@ -301,13 +291,15 @@
                                     <div class="average-metric">
                                         <div class="average-label"><?= htmlspecialchars($nomsFrancaisVariables[$cleVariable] ?? $cleVariable) ?></div>
                                         <div class="average-value"><?= number_format($statistiques['moyenne'], 4, ',', ' ') ?> <?= htmlspecialchars($unitesVariables[$cleVariable] ?? '') ?></div>
-                                        <div class="average-range">
-                                            <span>Min</span>
-                                            <span><?= number_format($statistiques['minimum'], 4, ',', ' ') ?></span>
-                                        </div>
-                                        <div class="average-range">
-                                            <span>Max</span>
-                                            <span><?= number_format($statistiques['maximum'], 4, ',', ' ') ?></span>
+                                        <div class="average-box-range">
+                                            <div class="average-range">
+                                                <span>Min</span>
+                                                <span><?= number_format($statistiques['minimum'], 4, ',', ' ') ?></span>
+                                            </div>
+                                            <div class="average-range">
+                                                <span>Max</span>
+                                                <span><?= number_format($statistiques['maximum'], 4, ',', ' ') ?></span>
+                                            </div>
                                         </div>
                                         <div class="average-stats">Ecart Type : <?= number_format($statistiques['ecartType'], 4, ',', ' ') ?></div>
                                         <div class="average-stats"><?= $statistiques['nombreMesures'] ?> mesures</div>

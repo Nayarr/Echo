@@ -1145,9 +1145,10 @@ main.carte-view #map{
         }
 
         .seasons-section h3 {
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 700;
-            margin-bottom: 15px;
+            margin: 10px 0px 10px 0px;
+            text-align: left;
         }
 
         .season-card {
@@ -1169,10 +1170,16 @@ main.carte-view #map{
             gap: 15px;
         }
 
-        .season-metric-value {
-            font-size: 36px;
+        .season-metric-label {
+            font-size: 14px;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .season-metric-value {
+            font-size: 19px;
+            padding-bottom: 10px;
         }
 
         .season-metric-date {
@@ -1196,6 +1203,12 @@ main.carte-view #map{
             background: linear-gradient(135deg, #4a3b5c 0%, #2d2440 100%);
         }
 
+        .chart-container {
+            margin-top: 20px; 
+            max-width: 900px;
+            height: 280px;height: 280px;
+        }
+
         .evolution-section h3 {
             font-size: 18px;
             font-weight: 700;
@@ -1212,6 +1225,12 @@ main.carte-view #map{
             margin: 5px;
         }
 
+        .average-section{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
         .average-metrics {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -1223,32 +1242,34 @@ main.carte-view #map{
         }
 
         .average-label {
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 18px;
+            font-weight: 900;
             margin-bottom: 15px;
             color: #333;
+            text-align: left;
         }
 
         .average-value {
-            font-size: 36px;
-            font-weight: 700;
+            font-size: 29px;
             margin-bottom: 10px;
             color: #333;
         }
 
+        .average-box-range{
+            display: flex;
+            justify-content: space-between;
+        }
+
         .average-range {
             display: flex;
+            flex-direction: column;
             justify-content: space-between;
             margin-bottom: 8px;
             font-size: 14px;
         }
 
         .average-range span:first-child {
-            color: #666;
-        }
-
-        .average-range span:last-child {
-            font-weight: 600;
+            color: #939393;
         }
 
         .average-stats {
