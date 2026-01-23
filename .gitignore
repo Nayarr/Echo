@@ -2,5 +2,6 @@ var/log/api_errors.log
 /vendor/
 composer.lock
 composer.json
+.DS_Store
 /Cles/
 var/log/controller_errors.log
