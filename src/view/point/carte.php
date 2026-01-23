@@ -1,19 +1,4 @@
 <style>
-main.carte-view {
-  margin: 0;
-  padding: 0;
-  height: calc(100vh - 120px);
-  display: flex;
-  flex-direction: column;
-}
-
-#map {
-  width: 100%;
-  height: 100%;
-  flex: 1;
-  border: 2px solid rgba(0,255,0,0.6);
-}
-
 /* Popup styling: anthracite background with white text */
 .maplibregl-popup-content {
   background: #2b2b2b !important;
