@@ -25,8 +25,6 @@
         </div>
     </div>
 
-    <div class="bulles"></div>
-
     <section class="section-wrap">
 
     <!-- Bloc 1 : Intro + Planisphere -->

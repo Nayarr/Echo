@@ -50,7 +50,7 @@ body {
 }
 
 .video-overlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -152,54 +152,6 @@ h3 {
 }
 
 
-/*Gauche*/
-
-.footer_gauche {
-    text-align: left;
-    width: 35%;
-}
-
-.footer_gauche img {
-    width: 60px;
-}
-
-.footer_gauche p {
-    color : white;
-}
-
-.footer_gauche .footer_logo img {
-    width: 30px;
-    margin-right: 10px;
-}
-
-/*Droite*/
-
-.footer_droit {
-    display: flex;
-    justify-content: space-around;
-    width: 45%;
-}
-
-.footer_column {
-    display: flex;
-    flex-direction: column;
-}
-
-.footer_column a {
-    margin: 0;
-    color: #BEBEBE;
-    text-decoration: none;
-    margin-bottom: 8px;
-}
-
-.footer_column h5 {
-    margin: 0;
-    color: white;
-    text-decoration: none;
-    font-size: 1.1em;
-    margin-bottom: 8px;
-}
-
 /* --- Accueil boutons --- */
 
 
@@ -221,25 +173,6 @@ h3 {
     margin-top: 0; /* Retire ton ancien margin-top: 13% sinon tu auras du blanc en haut */
 }
 
-.page1::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  height: 320px; /* augmente si tu veux encore plus smooth */
-  pointer-events: none;
-  z-index: 5;
-
-  background: linear-gradient(
-    to bottom,
-    rgba(11, 17, 46, 0) 0%,
-    rgba(11, 14, 46, 0.35) 40%,
-    rgba(11, 18, 46, 0.75) 70%,
-    rgb(11, 12, 46) 100%
-  );
-}
 
 .titre {
     margin-top: 16%;
