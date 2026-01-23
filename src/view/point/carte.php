@@ -112,7 +112,7 @@ map.on('click', async (e) => {
   const clickLon = e.lngLat.lng;
 
   const url =
-    `/Echo/web/frontController.php?action=apiNearestPoint&controller=point`
+    `/../web/frontController.php?action=apiNearestPoint&controller=point`
     + `&lat=${clickLat}&lon=${clickLon}`
     + `&radius=${SEARCH_RADIUS}`;
 
