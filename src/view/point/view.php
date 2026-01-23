@@ -13,7 +13,9 @@
 
 <header>
     <div class="nav-brand">
-        <div class="nav-brand-icon">E</div> <span>Echo</span>
+        <a href="<?= $baseURL ?>?action=accueil" class="homebtn">
+            <img src="/Echo/web/assets/img/LogoEcho2.png" alt="Logo Echo">
+        </a>
     </div>
 
     <nav class="nav-links">
@@ -21,10 +23,6 @@
         <a href="#">Roadmap</a> <a href="#">Docs</a>    </nav>
 
     <div class="nav-actions">
-        <div class="search-bar">
-            <span>🔍 Rechercher...</span>
-        </div>
-
         <?php if (isset($_SESSION['user_uid'])): ?>
             <a href="#" class="btn-nav btn-secondary">
                 👤 <?= htmlspecialchars($_SESSION['user_prenom'] ?? 'Moi') ?>
@@ -49,51 +47,6 @@
 
 <footer>
     <p style="text-align:center; margin-top:30px; color:#888; font-size:0.8em;">Projet SAE 300 - Echo Maritime</p>
-    <div class="conteneur">
-        <div class="footer_conteneur">
-            <div class="footer_haut">
-                <div class="footer_gauche">
-                    <img src="/Echo/web/assets/img/logo.png" alt="">
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget est a tellus feugiat varius. Phasellus porttitor odio et quam semper consectetur. 
-                    </p>
-                    <div class="footer_logo">
-                        <img src="/Echo/web/assets/img/insta.svg" alt="">
-                        <img src="/Echo/web/assets/img/x.svg" alt="">
-                        <img src="/Echo/web/assets/img/lnkd.svg" alt="">
-                        <img src="/Echo/web/assets/img/github.svg" alt="">
-                    </div>
-                </div>
-                <div class="footer_droit">
-                    <div class="footer_column">
-                        <h5>Entreprise</h5>
-                        <a href="#">À propos</a>
-                        <a href="#">Team</a>
-                        <a href="#">Contact</a>
-                        <a href="#">Support</a>
-                    </div>
-
-                    <div class="footer_column">
-                        <h5>Entreprise</h5>
-                        <a href="#">À propos</a>
-                        <a href="#">Team</a>
-                        <a href="#">Contact</a>
-                        <a href="#">Support</a>
-                    </div>
-
-                    <div class="footer_column">
-                        <h5>Entreprise</h5>
-                        <a href="#">À propos</a>
-                        <a href="#">Team</a>
-                        <a href="#">Contact</a>
-                        <a href="#">Support</a>
-                    </div>
-                </div>
-            </div>
-            
-            <p>© 2025 Echo. All rights reserved.</p>
-        </div>
-    </div>
 </footer>
 
 </body>

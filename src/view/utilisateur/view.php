@@ -4,26 +4,25 @@
     <meta charset="UTF-8">
     <title><?php echo $pagetitle; ?></title>
     <link rel="stylesheet" href="../web/assets/css/style.css">
+    
+    <?php if ($pagetitle === "Carte des points"): ?>
+        <link href="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.css" rel="stylesheet"/>
+    <?php endif; ?>
 </head>
 <body>
 
 <header>
     <div class="nav-brand">
-        <div class="nav-brand-icon">E</div>
-        <span>Echo</span>
+        <a href="<?= $baseURL ?>?action=accueil" class="homebtn">
+            <img src="/Echo/web/assets/img/LogoEcho2.png" alt="Logo Echo">
+        </a>
     </div>
 
     <nav class="nav-links">
         <a href="frontController.php?controller=point&action=carte">Carte</a>
-        <a href="#">Roadmap</a>
-        <a href="#">Docs</a>
-    </nav>
+        <a href="#">Roadmap</a> <a href="#">Docs</a>    </nav>
 
     <div class="nav-actions">
-        <div class="search-bar">
-            <span>🔍 Rechercher...</span>
-        </div>
-
         <?php if (isset($_SESSION['user_uid'])): ?>
             <a href="#" class="btn-nav btn-secondary">
                 👤 <?= htmlspecialchars($_SESSION['user_prenom'] ?? 'Moi') ?>
@@ -41,11 +40,9 @@
         <?php endif; ?>
     </div>
 </header>
-<main>
-    <?php
-    // Ici s'affiche le formulaire (inscription.php ou conection.php)
-    require __DIR__ . "/{$cheminVueBody}";
-    ?>
+
+<main <?php echo ($pagetitle === "Carte des points") ? 'class="carte-view"' : ''; ?>>
+    <?php require __DIR__ . "/{$cheminVueBody}"; ?>
 </main>
 
 <footer>

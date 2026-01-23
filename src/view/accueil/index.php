@@ -24,14 +24,10 @@
             <span class="btn-txt"
                 >Accéder à <br/>
                 la carte</span>
-</button>
-
-
+            </button>
         </div>
     </div>
-
-    <div class="bulles"></div>
-
+    
     <div class="conteneur">
         <div class="boite_texte">
             <div id="intro">

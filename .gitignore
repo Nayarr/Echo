@@ -3,3 +3,4 @@ var/log/api_errors.log
 composer.lock
 composer.json
 /Cles/
+var/log/controller_errors.log
