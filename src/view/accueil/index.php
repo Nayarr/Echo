@@ -25,8 +25,6 @@
         </div>
     </div>
 
-    <div class="bulles"></div>
-
     <section class="section-wrap">
 
     <!-- Bloc 1 : Intro + Planisphere -->
@@ -85,7 +83,7 @@
             <div class="icon-ring">
             <span class="icon">PH</span>
             </div>
-            <h4>PH et CO2</h4>
+            <h4>PH (Soon)</h4>
             <p>Mesures directes de l'acidité et de la concentration en carbone.</p>
         </article>
 
@@ -109,7 +107,7 @@
             <div class="icon-ring">
             <span class="icon">O2</span>
             </div>
-            <h4>Chlorophylle-a et Oxygène</h4>
+            <h4>Chlorophylle-a et Oxygène dissous (Soon)</h4>
             <p>Évaluer l’impact sur la vie marine et les risques d’hypoxie.</p>
         </article>
 

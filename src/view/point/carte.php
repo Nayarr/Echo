@@ -1,67 +1,29 @@
-<style>
-/* Popup styling: anthracite background with white text */
-.maplibregl-popup-content {
-  background: #2b2b2b !important;
-  color: #ffffff !important;
-  border-radius: 6px !important;
-  padding: 8px 10px !important;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.45) !important;
-}
+<div class="nav-func">
+  <!-- Navigate by ID -->
+  <div class="nav-box nav-box-id">
+    <form method="GET" action="<?= $baseURL ?>">
+      <input type="hidden" name="controller" value="point">
+      <input type="hidden" name="action" value="detail">
+      <input type="number" name="id" placeholder="ID du point" required>
+      <button type="submit" class="btn-submit">Voir le point</button>
+    </form>
+  </div>
 
-.maplibregl-popup-content strong {
-  color: #ffffff !important;
-}
-
-
-/* Popup tip (the little triangle) should match background */
-.maplibregl-popup-tip {
-  border-top-color: #2b2b2b !important;
-}
-
-/* Coordinates box (bottom-left) */
-.coords-box {
-  position: absolute;
-  left: 10px;
-  bottom: 10px;
-  background: rgba(43,43,43,0.9);
-  color: #fff;
-  padding: 6px 10px;
-  border-radius: 4px;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 13px;
-  z-index: 9999;
-  pointer-events: none;
-  white-space: nowrap;
-}
-
-</style>
+  <!-- Navigate by coordinates -->
+  <div class="nav-box nav-box-coords">
+    <form method="GET" action="<?= $baseURL ?>">
+      <input type="hidden" name="controller" value="point">
+      <input type="hidden" name="action" value="rechercheParCoordonnees">
+      <div class="input-group">
+        <input type="number" name="lat" placeholder="Latitude" step="any" required>
+        <input type="number" name="lon" placeholder="Longitude" step="any" required>
+      </div>
+      <button type="submit" class="btn-submit">Voir le point</button>
+    </form>
+  </div>
+</div>
 
 <div id="map"></div>
-
-<!-- Navigate by ID -->
-<div class="nav-box nav-box-id">
-  <h4>Accès par ID</h4>
-  <form method="GET" action="<?= $baseURL ?>">
-    <input type="hidden" name="controller" value="point">
-    <input type="hidden" name="action" value="detail">
-    <input type="number" name="id" placeholder="ID du point" required>
-    <button type="submit">Voir le point</button>
-  </form>
-</div>
-
-<!-- Navigate by coordinates -->
-<div class="nav-box nav-box-coords">
-  <h4>Accès par coordonnées</h4>
-  <form method="GET" action="<?= $baseURL ?>">
-    <input type="hidden" name="controller" value="point">
-    <input type="hidden" name="action" value="rechercheParCoordonnees">
-    <div class="input-group">
-      <input type="number" name="lat" placeholder="Latitude" step="any" required>
-      <input type="number" name="lon" placeholder="Longitude" step="any" required>
-    </div>
-    <button type="submit">Voir le point</button>
-  </form>
-</div>
 
 <script src="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.js"></script>
 

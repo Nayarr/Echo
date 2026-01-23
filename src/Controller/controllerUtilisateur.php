@@ -1,32 +1,36 @@
 <?php
-// Fichier : src/Controller/controllerUtilisateur.php
-
 namespace App\SAE\Controller;
 
 use App\SAE\Config\Conf;
 use App\SAE\Lib\Session;
-use App\SAE\Model\DataObject\Utilisateur;
+// Import du Repository pour gérer les favoris (MySQL)
+use App\SAE\Model\Repository\PointRepository; 
+
+// Imports pour gérer les erreurs Firebase proprement
 use Kreait\Firebase\Exception\Auth\EmailExists;
-use Kreait\Firebase\Exception\Auth\FailedToVerifyToken;
+use Kreait\Firebase\Exception\Auth\WeakPassword;
 
 class controllerUtilisateur
 {
     private $auth;
     private $database;
 
-    // Constructeur obligatoire pour recevoir la connexion Firebase
+    // Le constructeur reçoit la Factory Firebase depuis le FrontController
     public function __construct($factory) {
         $this->auth = $factory->createAuth();
         $this->database = $factory->createDatabase();
     }
 
+    // Fonction utilitaire pour afficher les vues
     private static function afficheVue(string $cheminVue, array $parametres = []): void {
         $parametres['baseURL'] = Conf::getBaseURL();
         extract($parametres);
         require __DIR__ . "/../view/$cheminVue";
     }
 
-    // --- INSCRIPTION ---
+    // ============================================================
+    // 1. INSCRIPTION
+    // ============================================================
 
     public function inscription(): void {
         self::afficheVue('utilisateur/view.php', [
@@ -36,6 +40,16 @@ class controllerUtilisateur
     }
 
     public function created(): void {
+        // Protection si formulaire vide
+        if (empty($_POST)) {
+            self::afficheVue('utilisateur/view.php', [
+                "pagetitle" => "Inscription",
+                "cheminVueBody" => "inscription.php",
+                "error" => "Erreur : Le formulaire est vide."
+            ]);
+            return;
+        }
+
         $prenom = $_POST['Prenom'] ?? '';
         $nom    = $_POST['nom'] ?? '';
         $email  = $_POST['email'] ?? '';
@@ -43,6 +57,7 @@ class controllerUtilisateur
         $cmdp   = $_POST['Cmdp'] ?? '';
         $profil = $_POST['ProfilUtilisateur'] ?? 'GrandPublic';
 
+        // Vérification Mots de passe
         if ($mdp !== $cmdp) {
             self::afficheVue('utilisateur/view.php', [
                 "pagetitle" => "Inscription",
@@ -52,8 +67,17 @@ class controllerUtilisateur
             return;
         }
 
+        if (strlen($mdp) < 6) {
+            self::afficheVue('utilisateur/view.php', [
+                "pagetitle" => "Inscription",
+                "cheminVueBody" => "inscription.php",
+                "error" => "Le mot de passe est trop court (min 6 caractères)."
+            ]);
+            return;
+        }
+
         try {
-            // 1. Créer le compte Auth (Email/Pass)
+            // Création Firebase Auth
             $userProperties = [
                 'email' => $email,
                 'emailVerified' => false,
@@ -61,9 +85,10 @@ class controllerUtilisateur
                 'displayName' => "$prenom $nom",
                 'disabled' => false,
             ];
+
             $createdUser = $this->auth->createUser($userProperties);
 
-            // 2. Stocker les infos dans la Database
+            // Enregistrement dans la Database
             $this->database->getReference('users/' . $createdUser->uid)->set([
                 'prenom' => $prenom,
                 'nom' => $nom,
@@ -72,12 +97,14 @@ class controllerUtilisateur
                 'date_creation' => time()
             ]);
 
-            // 3. Connecter l'utilisateur (Session PHP)
-            Session::start();
-            // On stocke l'UID Firebase en session
+            // Connexion automatique (Session)
+            if (session_status() === PHP_SESSION_NONE) {
+                Session::start();
+            }
             $_SESSION['user_uid'] = $createdUser->uid;
             $_SESSION['user_prenom'] = $prenom;
 
+            // Redirection vers la carte
             header('Location: frontController.php?controller=point&action=carte');
             exit();
 
@@ -85,18 +112,26 @@ class controllerUtilisateur
             self::afficheVue('utilisateur/view.php', [
                 "pagetitle" => "Inscription",
                 "cheminVueBody" => "inscription.php",
-                "error" => "Email déjà utilisé."
+                "error" => "Cet email est déjà utilisé par un autre compte."
+            ]);
+        } catch (WeakPassword $e) {
+            self::afficheVue('utilisateur/view.php', [
+                "pagetitle" => "Inscription",
+                "cheminVueBody" => "inscription.php",
+                "error" => "Mot de passe trop faible."
             ]);
         } catch (\Exception $e) {
             self::afficheVue('utilisateur/view.php', [
-                "pagetitle" => "Erreur",
+                "pagetitle" => "Inscription",
                 "cheminVueBody" => "inscription.php",
-                "error" => "Erreur : " . $e->getMessage()
+                "error" => "Erreur technique : " . $e->getMessage()
             ]);
         }
     }
 
-    // --- CONNEXION ---
+    // ============================================================
+    // 2. CONNEXION
+    // ============================================================
 
     public function connexion(): void {
         self::afficheVue('utilisateur/view.php', [
@@ -110,19 +145,14 @@ class controllerUtilisateur
         $mdp   = $_POST['mdp'] ?? '';
 
         try {
-            // 1. Vérifier Email/Mdp auprès de Firebase
             $signInResult = $this->auth->signInWithEmailAndPassword($email, $mdp);
-            
-            // 2. Récupérer l'info utilisateur
             $uid = $signInResult->firebaseUserId();
             
-            // 3. Récupérer les infos supplémentaires depuis la Database (Prénom, Nom)
             $snapshot = $this->database->getReference('users/' . $uid)->getSnapshot();
-            $userData = $snapshot->getValue();
-            $prenom = $userData['prenom'] ?? 'Utilisateur';
+            $val = $snapshot->getValue();
+            $prenom = $val['prenom'] ?? 'Utilisateur';
 
-            // 4. Mettre en Session PHP
-            Session::start();
+            if (session_status() === PHP_SESSION_NONE) Session::start();
             $_SESSION['user_uid'] = $uid;
             $_SESSION['user_prenom'] = $prenom;
 
@@ -138,8 +168,51 @@ class controllerUtilisateur
         }
     }
 
-     public function toggleFavori(): void {
-        // 1. Vérifier si connecté
+    // ============================================================
+    // 3. DÉCONNEXION
+    // ============================================================
+
+    public function logout(): void {
+        Session::destroy();
+        header('Location: frontController.php?controller=point&action=carte');
+        exit();
+    }
+
+    // ============================================================
+    // 4. FAVORIS
+    // ============================================================
+
+    public function mesFavoris(): void {
+        if (!isset($_SESSION['user_uid'])) {
+            header('Location: frontController.php?controller=utilisateur&action=connexion');
+            exit();
+        }
+
+        $favorisDetails = [];
+
+        try {
+            $uid = $_SESSION['user_uid'];
+            $snapshot = $this->database->getReference("users/$uid/favoris")->getSnapshot();
+
+            if ($snapshot->exists()) {
+                $idsFirebase = array_keys($snapshot->getValue());
+                $pointRepo = new PointRepository();
+                $favorisDetails = $pointRepo->selectManyById($idsFirebase);
+            }
+        } catch (\Exception $e) {
+            // Liste vide en cas d'erreur
+        }
+
+        self::afficheVue('utilisateur/view.php', [
+            "pagetitle" => "Mes Favoris",
+            "cheminVueBody" => "favoris.php",
+            "points" => $favorisDetails
+        ]);
+    }
+
+    public function toggleFavori(): void {
+        header('Content-Type: application/json');
+
         if (!isset($_SESSION['user_uid'])) {
             echo json_encode(['status' => 'error', 'message' => 'Non connecté']);
             return;
@@ -153,34 +226,21 @@ class controllerUtilisateur
             return;
         }
 
-        // 2. Chemin vers le favori spécifique dans Firebase
-        // Exemple : users/uid123/favoris/14
-        $reference = $this->database->getReference("users/$uid/favoris/$pointId");
-        
-        // 3. Vérifier s'il existe déjà
-        $snapshot = $reference->getSnapshot();
+        try {
+            $ref = $this->database->getReference("users/$uid/favoris/$pointId");
+            $snap = $ref->getSnapshot();
 
-        if ($snapshot->exists()) {
-            // IL EXISTE -> ON LE SUPPRIME
-            $reference->remove();
-            $action = 'removed';
-        } else {
-            // IL N'EXISTE PAS -> ON L'AJOUTE (On met 'true' ou la date)
-            $reference->set(time());
-            $action = 'added';
+            if ($snap->exists()) {
+                $ref->remove();
+                echo json_encode(['status' => 'success', 'action' => 'removed']);
+            } else {
+                $ref->set(time());
+                echo json_encode(['status' => 'success', 'action' => 'added']);
+            }
+        } catch (\Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
-
-        // 4. Répondre en JSON pour le JavaScript
-        header('Content-Type: application/json');
-        echo json_encode(['status' => 'success', 'action' => $action]);
-        exit(); // Important pour ne pas charger de vue HTML
-    }
-
-    public function logout(): void {
-        Session::destroy();
-        header('Location: frontController.php?controller=point&action=carte');
         exit();
     }
 }
-   
 ?>
