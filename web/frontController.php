@@ -53,7 +53,7 @@ $factory = (new Factory)
 // 5. ROUTAGE 
 // ============================================================
 $controller = $_REQUEST['controller'] ?? 'point';
-$action     = $_REQUEST['action'] ?? 'carte';
+$action     = $_REQUEST['action'] ?? 'accueil';
 
 $controllerClassName = "App\\SAE\\Controller\\controller" . ucfirst($controller);
 
@@ -63,13 +63,10 @@ if (class_exists($controllerClassName)) {
     if (in_array($action, get_class_methods($controllerClassName))) {
         $controllerInstance->$action();
     } else {
-        // Si l'action n'existe pas -> Retour carte
         header('Location: frontController.php?controller=point&action=carte');
         exit();
     }
 } else {
-    // Si le contrôleur n'existe pas -> Retour carte
-    header('Location: frontController.php?controller=point&action=carte');
-    exit();
+    echo "Erreur : Contrôleur '$controllerClassName' introuvable.";
 }
 ?>

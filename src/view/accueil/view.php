@@ -18,7 +18,9 @@
 
         <nav class="nav-links">
             <a href="frontController.php?controller=point&action=carte">Carte</a>
-            <a href="#">Roadmap</a> <a href="#">Docs</a>    </nav>
+            <a href="#">Source</a> 
+            <a href="#">Equipe</a>    
+        </nav>
 
         <div class="nav-actions">
             <?php if (isset($_SESSION['user_uid'])): ?>
