@@ -27,107 +27,106 @@
 
     <div class="bulles"></div>
 
-    <div class="conteneur">
-        <div class="boite_texte">
-            <div id="intro">
-                <h3>L'Acidification des Océans : Rendre Visible l'Invisible</h3>
-                <p>
-                    L'océan est souvent perçu comme une masse d'eau immuable, mais sous la surface, une crise silencieuse bouleverse l'équilibre chimique de notre planète. Ce site de visualisation de données est né d'une volonté simple : comprendre et illustrer l'impact du CO<sub>2</sub> sur nos écosystèmes marins.
-                <p>
-                    Dans le cadre de notre projet de deuxième année en BUT Informatique (SAE 3.01), notre équipe s'est penchée sur ce phénomène complexe pour le rendre accessible à travers la data.
-                </p>
-            </div>
+    <section class="section-wrap">
 
-            <div id="pourquoi">
-                <h4>Pourquoi parler d'acidification ?</h4>
-                <p>
-                    L'acidification des océans est une conséquence directe de nos émissions de gaz à effet de serre.
-                    Chaque année, les océans absorbent environ 30% du CO<sub>2</sub> émis par les activités humaines.
-                    C'est un service écologique immense, mais qui a un coût :
-                </p>
+    <!-- Bloc 1 : Intro + Planisphere -->
+    <div class="glass-panel grid-2">
+        <div class="panel-text">
+        <h2>L'Acidification des Océans :<br>Rendre Visible l'Invisible</h2>
+        <p>
+            L'océan est souvent perçu comme une masse d'eau immuable, mais sous la surface, une crise silencieuse bouleverse
+            l'équilibre chimique de notre planète. Ce site de visualisation de données est né d'une volonté simple :
+            comprendre et illustrer l'impact du CO<sub>2</sub> sur nos écosystèmes marins.
+        </p>
+        <p>
+            Dans le cadre de notre projet de deuxième année en BUT Informatique (SAE 3.01), notre équipe s'est penchée sur
+            ce phénomène complexe pour le rendre accessible à travers la data.
+        </p>
+        </div>
 
-                <ul>
-                <li>
-                    Une chimie bouleversée :
-                    Lorsque le CO<sub>2</sub> se dissout, il forme de l'acide carbonique, libérant des ions hydrogène
-                    qui font baisser le pH de l'eau.
-                </li>
-                <li>
-                    Une acidité en hausse :
-                    Depuis l'ère industrielle, le pH moyen de surface est passé de 8,2 à 8,1.
-                    Cela semble peu, mais c'est une échelle logarithmique : cela représente une augmentation
-                    de l'acidité de 30%.
-                </li>
-                <li>
-                    Une menace biologique :
-                    Cette acidité "ronge" les éléments calcaires. Les coraux, huîtres et crabes peinent à fabriquer
-                    leurs coquilles, et le phytoplancton, base de la chaîne alimentaire, voit sa productivité chuter.
-                </li>
-                </ul>
-
-                <p>
-                    Ce n'est pas qu'un problème écologique : plus de 3 milliards de personnes
-                    dépendent de la mer pour vivre (pêche, tourisme).
-                </p>
-            </div>
-
-            <div id="donnees">
-                <h4>Ce que ce site vous permet de visualiser</h4>
-                <p>
-                    Pour comprendre ce phénomène, il ne suffit pas de regarder le pH. 
-                    Notre outil croise plusieurs indicateurs clés que nous avons sélectionnés pour leur pertinence scientifique:
-                </p>
-
-                <ul>
-                    <li>
-                        Le pH et le CO<sub>2</sub> : Les mesures directes de l'acidification.
-                    </li>
-                    <li>
-                        La Température : Car l'eau chaude absorbe moins bien le CO<sub>2</sub>.
-                    </li>
-                    <li>
-                        La Salinité : Qui influence la capacité de l'eau à dissoudre les gaz.
-                    </li>
-
-                    <li>
-                        La Chlorophylle-a et l'Oxygène dissous : Pour visualiser l'impact concret sur la vie marine (phytoplancton) et les zones mortes (hypoxie).
-                    </li>
-                </ul>
-
-                <p>
-                    En combinant ces données, notre site offre une vision globale de l'acidification
-                    et de ses conséquences sur les écosystèmes marins.
-                </p>
-
-                <a href="<?= $baseURL ?>?action=carte&controller=point" class="signin">Visualiser les données</a>
-            </div>
-
-            <div id="transparence">
-                <h4>La transparence de nos données</h4>
-                <p>
-                    À l'heure des fake news, la source des données est primordiale. Nous avons fait le choix de la rigueur scientifique plutôt que de la facilité.
-                </p>
-
-                <p>
-                    Toutes les visualisations présentes sur ce site sont alimentées par le Copernicus Marine Service (CMEMS). Il s'agit d'une référence mondiale offrant des données validées scientifiquement.
-                    En utilisant ces données ouvertes, nous garantissons la fiabilité et la transparence de notre travail.
-                </p>
-
-                <p>
-                   Bien que d'autres sources existent (comme les API météo classiques ou StormGlass), nous les avons écartées car elles étaient soit payantes, soit moins complètes scientifiquement.
-                   Utiliser Copernicus nous a demandé de relever un défi technique important : 
-                   le traitement de formats complexes (NetCDF) pour garantir que chaque graphique que vous voyez est basé sur des relevés océanographiques fiables
-                </p>
-            </div>
-
-            <div id="equipe">
-                <h4>Notre équipe</h4>
-                <p>
-                    Ce projet a été réalisé par une équipe de cinq étudiants en deuxième année de BUT Informatique à l'IUT de Créteil Vitry :
-                </p>
-            </div>
+        <div class="panel-media">
+        <img src="/Echo/web/assets/img/Planisphere.png" alt="Planisphère">
         </div>
     </div>
+
+    <!-- Bloc 2 : PH image + Pourquoi -->
+    <div class="glass-panel grid-2 reverse">
+        <div class="panel-media">
+        <img src="/Echo/web/assets/img/Ph_Eau.png" alt="pH et vie marine">
+        </div>
+
+        <div class="panel-text">
+        <h3>Pourquoi parler d'acidification ?</h3>
+        <p>
+            L'acidification des océans est une conséquence directe de nos émissions de gaz à effet de serre.
+            Chaque année, les océans absorbent environ 30% du CO<sub>2</sub> émis par les activités humaines.
+        </p>
+
+        <ul class="bullet">
+            <li><strong>Une chimie bouleversée :</strong> le CO<sub>2</sub> dissous forme de l'acide carbonique et fait baisser le pH.</li>
+            <li><strong>Une acidité en hausse :</strong> depuis l’ère industrielle, l’acidité a augmenté d’environ 30%.</li>
+            <li><strong>Une menace biologique :</strong> coraux/coquilles en difficulté, impacts sur la chaîne alimentaire.</li>
+        </ul>
+
+        <p class="small">
+            Ce n’est pas qu’un problème écologique : des milliards de personnes dépendent de la mer (pêche, tourisme).
+        </p>
+        </div>
+    </div>
+
+    <!-- Titre section cards -->
+    <h3 class="section-title">Ce que ce site vous permet de visualiser</h3>
+
+    <!-- Bloc cartes -->
+    <div class="glass-panel cards-panel">
+        <div class="cards-grid">
+
+        <article class="feature-card active">
+            <div class="icon-ring">
+            <span class="icon">PH</span>
+            </div>
+            <h4>PH et CO2</h4>
+            <p>Mesures directes de l'acidité et de la concentration en carbone.</p>
+        </article>
+
+        <article class="feature-card">
+            <div class="icon-ring">
+            <span class="icon">💧</span>
+            </div>
+            <h4>La Salinité</h4>
+            <p>Indicateur de la capacité physique de l'eau à dissoudre les gaz.</p>
+        </article>
+
+        <article class="feature-card active">
+            <div class="icon-ring">
+            <span class="icon">🌡️</span>
+            </div>
+            <h4>La Température</h4>
+            <p>Facteur clé influençant la solubilité et l’absorption du CO2.</p>
+        </article>
+
+        <article class="feature-card">
+            <div class="icon-ring">
+            <span class="icon">O2</span>
+            </div>
+            <h4>Chlorophylle-a et Oxygène</h4>
+            <p>Évaluer l’impact sur la vie marine et les risques d’hypoxie.</p>
+        </article>
+
+        </div>
+    </div>
+
+    <h3 class="section-title">La transparence de nos données</h3>
+    <div class="glass-panel">
+        <div class="panel-text">
+        <p>
+            Toutes les visualisations présentes sur ce site sont alimentées par le Copernicus Marine Service (CMEMS),
+            une référence mondiale offrant des données validées scientifiquement.
+        </p>
+        </div>
+    </div>
+
+    </section>
 
 
 </body>

@@ -46,52 +46,35 @@
     require __DIR__ . "/{$cheminVueBody}";
     ?>
 </main>
-<footer>
-    <div class="conteneur">
-        <div class="footer_conteneur">
-            <div class="footer_haut">
-                <div class="footer_gauche">
-                    <img src="/Echo/web/assets/img/logo.png" alt="">
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget est a tellus feugiat varius. Phasellus porttitor odio et quam semper consectetur. 
-                    </p>
-                    <div class="footer_logo">
-                        <img src="/Echo/web/assets/img/insta.svg" alt="">
-                        <img src="/Echo/web/assets/img/x.svg" alt="">
-                        <img src="/Echo/web/assets/img/lnkd.svg" alt="">
-                        <img src="/Echo/web/assets/img/github.svg" alt="">
-                    </div>
-                </div>
-                <div class="footer_droit">
-                    <div class="footer_column">
-                        <h5>Entreprise</h5>
-                        <a href="#">À propos</a>
-                        <a href="#">Team</a>
-                        <a href="#">Contact</a>
-                        <a href="#">Support</a>
-                    </div>
+<footer class="footer">
+  <div class="footer-inner">
 
-                    <div class="footer_column">
-                        <h5>Entreprise</h5>
-                        <a href="#">À propos</a>
-                        <a href="#">Team</a>
-                        <a href="#">Contact</a>
-                        <a href="#">Support</a>
-                    </div>
+    <!-- Gauche -->
+    <div class="footer-left">
+      <img src="/Echo/web/assets/img/LogoEcho2.png" alt="Echo Logo" class="footer-logo">
 
-                    <div class="footer_column">
-                        <h5>Entreprise</h5>
-                        <a href="#">À propos</a>
-                        <a href="#">Team</a>
-                        <a href="#">Contact</a>
-                        <a href="#">Support</a>
-                    </div>
-                </div>
-            </div>
-            
-            <p>© 2025 Echo. All rights reserved.</p>
-        </div>
+      <div class="footer-socials">
+        <img src="/Echo/web/assets/img/insta.svg" alt="Instagram">
+        <img src="/Echo/web/assets/img/x.svg" alt="X">
+        <img src="/Echo/web/assets/img/lnkd.svg" alt="LinkedIn">
+        <img src="/Echo/web/assets/img/github.svg" alt="GitHub">
+      </div>
     </div>
+
+    <!-- Droite -->
+    <div class="footer-right">
+      <h5>Entreprise</h5>
+      <a href="#">À propos</a>
+      <a href="#">Team</a>
+      <a href="#">Contact</a>
+      <a href="#">Support</a>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    © 2025 Echo. All rights reserved.
+  </div>
 </footer>
 </div>
 </body>
