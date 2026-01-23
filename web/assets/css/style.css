@@ -1,3 +1,30 @@
+/* =========================================
+   1. VARIABLES & RESET (Le socle du design)
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    /* Palette de couleurs modernes */
+    --primary-color: #3b82f6;       /* Bleu vibrant */
+    --primary-hover: #2563eb;       /* Bleu plus sombre au survol */
+    --background-color: #f3f4f6;    /* Gris très pâle (pour éviter le blanc pur agressif) */
+    --card-background: #ffffff;     /* Blanc pur pour les cartes */
+    
+    /* Textes */
+    --text-main: #111827;           /* Noir doux */
+    --text-muted: #111827;          /* Gris texte secondaire */
+    --text-white: white;            /* Texte blanc */
+    
+    /* Formes */
+    --radius-pill: 50px;            /* Pour le menu et les boutons */
+    --radius-card: 24px;            /* Pour les formulaires */
+    
+    /* Ombres (Magie du design moderne) */
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-float: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.3); /* Lueur bleue */
+}
+
 body {
     font-family: "Segoe UI", Roboto, Arial, sans-serif;
     text-align: center;
@@ -245,175 +272,303 @@ nav {
 
 
 
-/* --- Conteneur principal --- */
-.container {
-    height: 210px;
-    max-width: 800px;
-    margin: 10px auto;
-    background: white;
-    padding: 3px;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+.search-bar {
     display: flex;
+    align-items: center;
+    background-color: #f3f4f6;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: #9ca3af;
+    font-size: 0.85em;
+    border: 1px solid transparent;
+    transition: all 0.2s;
 }
 
-.container_traj{
-    height: 410px;
-    max-width: 800px;
-    margin: 10px auto;
-    background: white;
-    padding: 3px;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
+.search-bar:hover {
+    background-color: white;
+    border-color: #e5e7eb;
+    box-shadow: var(--shadow-soft);
 }
 
-.voitureimg img {
-    width: 275px;
-    border-radius: 15Px;
+/* Boutons Navigation */
+.btn-nav {
+    padding: 10px 20px;
+    border-radius: var(--radius-pill);
+    font-size: 0.9em;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
 }
 
-.userimg img {
-    width: 215px;
-    border-radius: 15Px;
+.btn-primary {
+    background-color: var(--text-main); /* Noir moderne */
+    color: white !important;
 }
 
-.infogeneral {
-    width: 100%;
+.btn-primary:hover {
+    background-color: black;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
-.v {
-    height: 100%;
+.btn-secondary {
+    color: var(--text-main) !important;
+    background: transparent;
+}
+
+.btn-secondary:hover {
+    color: var(--primary-color) !important;
+}
+
+/* =========================================
+   3. LA CARTE (Plein écran mais propre)
+   ========================================= */
+main {
+    padding: 0 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Spécifique à la vue Carte pour qu'elle prenne de la place */
+main.carte-view {
+    max-width: 100%;
+    padding: 0 20px;
+    height: calc(100vh - 120px); /* Hauteur écran - hauteur menu */
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
 }
 
-/* Modifier*/
-.btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 130px;
+#map {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-float);
+    border: 4px solid white; /* Bordure blanche pour effet cadre photo */
+}
+
+/* --- BOUTON FAVORI (COEUR) --- */
+.btn-fav {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 50%; /* Rond parfait */
+    width: 40px;
     height: 40px;
-    font-size: 1.1em;
-    cursor: pointer;
-    background-color: #171717;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    transition: all .4s;
-}
-
-.btn:hover {
-    border-radius: 5px;
-    transform: translateY(-10px);
-    box-shadow: 0 7px 0 -2px #a659f8,
-    0 15px 0 -4px #ff84fb,
-    0 16px 10px -3px #ff84fb;
-}
-
-.btn:active {
-    transition: all 0.2s;
-    transform: translateY(-5px);
-    box-shadow: 0 2px 0 -2px #a659f8,
-    0 8px 0 -4px #ff84fb,
-    0 12px 10px -3px #ff84fb;
-}
-
-
-/* Supprimer */
-.suppr {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: rgb(20, 20, 20);
-    border: none;
-    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
     cursor: pointer;
-    transition-duration: .3s;
-    overflow: hidden;
-    position: relative;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-size: 20px;
+    color: #ccc; /* Gris quand pas favori */
 }
 
-.svgIcon {
-    width: 12px;
-    transition-duration: .3s;
+.btn-fav:hover {
+    transform: scale(1.1);
 }
 
-.svgIcon path {
-    fill: white;
+/* Quand le coeur est activé (classe "active") */
+.btn-fav.active {
+    color: #ff4757; /* Rouge */
+    border-color: #ff4757;
+    background-color: #fff0f1;
 }
 
-.suppr:hover {
-    width: 140px;
-    border-radius: 50px;
-    transition-duration: .3s;
-    background-color: rgb(255, 69, 69);
-    align-items: center;
+/* Animation de battement quand on clique */
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
 }
 
-.suppr:hover .svgIcon {
-    width: 50px;
-    transition-duration: .3s;
-    transform: translateY(60%);
+.btn-fav.active i {
+    animation: heartBeat 0.3s ease-in-out;
 }
 
-.suppr::before {
-    position: absolute;
-    top: -20px;
-    content: "Delete";
-    color: white;
-    transition-duration: .3s;
-    font-size: 2px;
+/* =========================================
+   4. FORMULAIRES (Inscription / Connexion)
+   ========================================= */
+.form-card {
+    background-color: var(--card-background);
+    max-width: 480px;
+    margin: 60px auto;
+    padding: 40px;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-float);
+    animation: slideUp 0.4s ease-out; /* Petite animation à l'arrivée */
 }
 
-.suppr:hover::before {
-    font-size: 13px;
-    opacity: 1;
-    transform: translateY(30px);
-    transition-duration: .3s;
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.detail {
-    margin: 40px;
+.form-card h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 1.8em;
+    color: var(--text-main);
 }
 
-/* --- Boutons et formulaires --- */
-input[type="text"],
-input[type="number"] {
-    width: 98%;
-    padding: 4px;
-    margin-top: 4px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+/* Labels */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.9em;
+    color: #374151;
+}
+
+/* Champs Inputs */
+.form-group input, 
+.form-group select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px; /* Un peu moins rond que le bouton */
+    background-color: #f9fafb;
     font-size: 1em;
+    color: var(--text-main);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    font-family: inherit;
 }
 
-input[type="submit"], button {
-    background-color: #007bff;
+/* Effet Focus (Lueur bleue) */
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--primary-color);
+    background-color: white;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); /* Ring effect */
+}
+
+/* Bouton Submit */
+.btn-submit {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--primary-color), #2563eb);
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    border-radius: var(--radius-pill);
     font-size: 1em;
+    font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 15px;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
 }
 
-input[type="submit"]:hover, button:hover {
-    background-color: #0056b3;
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(37, 99, 235, 0.3);
 }
 
-fieldset {
-    margin-top: 20px;
+/* Footer du formulaire */
+.form-footer {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 0.9em;
+    color: var(--text-muted);
 }
+/*Bouton Connexion*/
+
+.user-profile {
+  width: 131px;
+  height: 51px;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  background: linear-gradient(
+    to bottom right,
+    #2e8eff 0%,
+    rgba(46, 142, 255, 0) 30%
+  );
+  background-color: rgba(46, 142, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-profile:hover,
+.user-profile:focus {
+  background-color: rgba(46, 142, 255, 0.7);
+  box-shadow: 0 0 10px rgba(46, 142, 255, 0.5);
+  outline: none;
+}
+
+.user-profile-inner {
+  width: 127px;
+  height: 47px;
+  border-radius: 13px;
+  background-color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.user-profile-inner svg {
+  width: 27px;
+  height: 27px;
+  margin-right: -10px;
+  fill: #fff;
+}
+
+
+/*Bouton Carte*/
+
+.button {
+  height: 50px;
+  width: 200px;
+  position: relative;
+  background-color: transparent;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  overflow: hidden;
+  border-radius: 30px;
+  color: #ffffff;
+  transition: all 0.5s ease-in-out;
+}
+
+.btn-txt {
+  z-index: 1;
+  font-weight: 800;
+  letter-spacing: 4px;
+}
+
+.type1::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  transition: all 0.5s ease-in-out;
+  background-color: #1a1a1a;
+  border-radius: 30px;
+  visibility: hidden;
+  height: 10px;
+  width: 10px;
+  z-index: -1;
+}
+
+.button:hover {
+  box-shadow: 1px 1px 200px #252525;
+  color: #fff;
+  border: none;
+}
+
+.type1:hover::after {
+  visibility: visible;
+  transform: scale(100) translateX(2px);
+}
+
+
 
 /*Bouton Connexion*/
 
@@ -544,22 +699,30 @@ table {
     margin-top: 15px;
 }
 
-th, td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
+.form-footer a {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
 }
 
-tr:hover {
-    background-color: #f5f5f5;
+.form-footer a:hover {
+    text-decoration: underline;
 }
 
-/* --- Messages d’erreur / succès --- */
-.error {
-    color: #b30000;
-    background: #ffe0e0;
-    border: 1px solid #b30000;
-    padding: 10px;
-    border-radius: 5px;
+/* Alertes Erreurs */
+.alert-error {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 0.95em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .success {
