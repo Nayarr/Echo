@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title><?php echo $pagetitle; ?></title>
-    <link rel="stylesheet" href="../web/assets/css/style.css">
+    <link rel="stylesheet" href="/../web/assets/css/style.css">
     
     <?php if ($pagetitle === "Carte des points"): ?>
         <link href="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.css" rel="stylesheet"/>
@@ -14,7 +14,7 @@
 <header>
     <div class="nav-brand">
         <a href="<?= $baseURL ?>?action=accueil" class="homebtn">
-            <img src="/Echo/web/assets/img/LogoEcho2.png" alt="Logo Echo">
+            <img src="/../web/assets/img/LogoEcho2.png" alt="Logo Echo">
         </a>
     </div>
 

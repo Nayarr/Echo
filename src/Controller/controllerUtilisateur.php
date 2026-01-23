@@ -13,7 +13,7 @@ class controllerUtilisateur
 {
     private $auth;
     private $database;
-
+    
     // Constructeur obligatoire pour recevoir la connexion Firebase
     public function __construct($factory) {
         $this->auth = $factory->createAuth();

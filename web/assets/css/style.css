@@ -39,7 +39,7 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: url("/Echo/web/assets/img/BGDesign2.png") center / cover no-repeat;
+  background: url("/../web/assets/img/BGDesign2.png") center / cover no-repeat;
   z-index: -100;          /* derrière TOUT */
   pointer-events: none;
 }

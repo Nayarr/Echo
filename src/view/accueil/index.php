@@ -2,18 +2,18 @@
 
     <div class="page1">
         <video autoplay muted loop playsinline class="video-bg">
-        <source src="/Echo/web/assets/video/Wavy.mp4" type="video/mp4">
+        <source src="/../web/assets/video/Wavy.mp4" type="video/mp4">
         Votre navigateur ne supporte pas la vidéo HTML5.
         </video>
 
         <div class="video-overlay"></div>
 
         <div class="titre">
-            <img width="40%" height="auto" src="/Echo/web/assets/img/Logo4.png" alt="Main Logo Site" class="Logo1">
+            <img width="40%" height="auto" src="/../web/assets/img/Logo4.png" alt="Main Logo Site" class="Logo1">
         </div>
 
         <div class="sous_titre">
-            <img width="35%" height="auto" src="/Echo/web/assets/img/Logo4Subtitle.png" alt="Sous-Titre Logo" class="Logo">
+            <img width="35%" height="auto" src="/../web/assets/img/Logo4Subtitle.png" alt="Sous-Titre Logo" class="Logo">
         </div>
 
         <div class="accueilbtn">
@@ -45,14 +45,14 @@
         </div>
 
         <div class="panel-media">
-        <img src="/Echo/web/assets/img/Planisphere.png" alt="Planisphère">
+        <img src="/../web/assets/img/Planisphere.png" alt="Planisphère">
         </div>
     </div>
 
     <!-- Bloc 2 : PH image + Pourquoi -->
     <div class="glass-panel grid-2 reverse">
         <div class="panel-media">
-        <img src="/Echo/web/assets/img/Ph_Eau.png" alt="pH et vie marine">
+        <img src="/../web/assets/img/Ph_Eau.png" alt="pH et vie marine">
         </div>
 
         <div class="panel-text">

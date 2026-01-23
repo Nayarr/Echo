@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title><?php echo $pagetitle; ?></title>
-    <link rel="stylesheet" href="/Echo/web/assets/css/style.css">
+    <link rel="stylesheet" href="/../web/assets/css/style.css">
     <?php if ($pagetitle === "Carte des points"): ?>
     <link href="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.css" rel="stylesheet"/>
     <?php endif; ?>
@@ -12,7 +12,7 @@
 <div class="bg-section">
 <header>
     <a href="<?= $baseURL ?>?action=accueil" class="homebtn">
-    <img src="/Echo/web/assets/img/LogoEcho2.png" alt="Logo Echo">
+    <img src="/../web/assets/img/LogoEcho2.png" alt="Logo Echo">
     </a>
     
     <nav>
@@ -51,13 +51,13 @@
 
     <!-- Gauche -->
     <div class="footer-left">
-      <img src="/Echo/web/assets/img/LogoEcho2.png" alt="Echo Logo" class="footer-logo">
+      <img src="/../web/assets/img/LogoEcho2.png" alt="Echo Logo" class="footer-logo">
 
       <div class="footer-socials">
-        <img src="/Echo/web/assets/img/insta.svg" alt="Instagram">
-        <img src="/Echo/web/assets/img/x.svg" alt="X">
-        <img src="/Echo/web/assets/img/lnkd.svg" alt="LinkedIn">
-        <img src="/Echo/web/assets/img/github.svg" alt="GitHub">
+        <img src="/../web/assets/img/insta.svg" alt="Instagram">
+        <img src="/../web/assets/img/x.svg" alt="X">
+        <img src="/../web/assets/img/lnkd.svg" alt="LinkedIn">
+        <img src="/../web/assets/img/github.svg" alt="GitHub">
       </div>
     </div>
 
