@@ -211,36 +211,45 @@ class controllerUtilisateur
     }
 
     public function toggleFavori(): void {
-        header('Content-Type: application/json');
-
-        if (!isset($_SESSION['user_uid'])) {
-            echo json_encode(['status' => 'error', 'message' => 'Non connecté']);
-            return;
-        }
-
-        $uid = $_SESSION['user_uid'];
-        $pointId = $_GET['id_point'] ?? null;
-
-        if (!$pointId) {
-            echo json_encode(['status' => 'error', 'message' => 'ID manquant']);
-            return;
-        }
-
-        try {
-            $ref = $this->database->getReference("users/$uid/favoris/$pointId");
-            $snap = $ref->getSnapshot();
-
-            if ($snap->exists()) {
-                $ref->remove();
-                echo json_encode(['status' => 'success', 'action' => 'removed']);
-            } else {
-                $ref->set(time());
-                echo json_encode(['status' => 'success', 'action' => 'added']);
-            }
-        } catch (\Exception $e) {
-            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
-        }
+    // Version POST au lieu de GET
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header('Location: frontController.php?controller=point&action=carte');
         exit();
     }
+
+    if (!isset($_SESSION['user_uid'])) {
+        header('Location: frontController.php?controller=utilisateur&action=connexion');
+        exit();
+    }
+
+    $uid = $_SESSION['user_uid'];
+    $pointId = $_POST['id_point'] ?? null;
+    $returnUrl = $_POST['return_url'] ?? 'frontController.php?controller=point&action=carte';
+
+    if (!$pointId) {
+        header('Location: ' . $returnUrl);
+        exit();
+    }
+
+    try {
+        $ref = $this->database->getReference("users/$uid/favoris/$pointId");
+        $snap = $ref->getSnapshot();
+
+        if ($snap->exists()) {
+            $ref->remove();
+            // Message de succès (optionnel, via session)
+            $_SESSION['message'] = 'Point retiré des favoris';
+        } else {
+            $ref->set(time());
+            $_SESSION['message'] = 'Point ajouté aux favoris';
+        }
+    } catch (\Exception $e) {
+        $_SESSION['error'] = 'Erreur : ' . $e->getMessage();
+    }
+    
+    // Redirection vers la page d'origine
+    header('Location: ' . $returnUrl);
+    exit();
+}
 }
 ?>

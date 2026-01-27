@@ -1,4 +1,4 @@
-<div class="form-card">
+<div class="glass-panel form-card">
     <h2>Créer un compte</h2>
     
     <?php if (isset($error)): ?>

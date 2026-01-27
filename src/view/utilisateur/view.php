@@ -45,36 +45,36 @@
     require __DIR__ . "/{$cheminVueBody}";
     ?>
 </main>
-    <footer class="footer">
-        <div class="footer-inner">
+<footer class="footer">
+  <div class="footer-inner">
 
-            <!-- Gauche -->
-            <div class="footer-left">
-            <img src="/Echo/web/assets/img/LogoEcho2.png" alt="Echo Logo" class="footer-logo">
+    <!-- Gauche -->
+    <div class="footer-left">
+      <img src="/Echo/web/assets/img/LogoEcho2.png" alt="Echo Logo" class="footer-logo">
 
-            <div class="footer-socials">
-                <img src="/Echo/web/assets/img/insta.svg" alt="Instagram">
-                <img src="/Echo/web/assets/img/x.svg" alt="X">
-                <img src="/Echo/web/assets/img/lnkd.svg" alt="LinkedIn">
-                <img src="/Echo/web/assets/img/github.svg" alt="GitHub">
-            </div>
-            </div>
+      <div class="footer-socials">
+        <img src="/Echo/web/assets/img/insta.svg" alt="Instagram">
+        <img src="/Echo/web/assets/img/x.svg" alt="X">
+        <img src="/Echo/web/assets/img/lnkd.svg" alt="LinkedIn">
+        <img src="/Echo/web/assets/img/github.svg" alt="GitHub">
+      </div>
+    </div>
 
-            <!-- Droite -->
-            <div class="footer-right">
-            <h5>Entreprise</h5>
-            <a href="#">À propos</a>
-            <a href="#">Team</a>
-            <a href="#">Contact</a>
-            <a href="#">Support</a>
-            </div>
+    <!-- Droite -->
+    <div class="footer-right">
+      <h5>Entreprise</h5>
+      <a href="#">À propos</a>
+      <a href="#">Team</a>
+      <a href="#">Contact</a>
+      <a href="#">Support</a>
+    </div>
 
-        </div>
+  </div>
 
-        <div class="footer-bottom">
-            © 2025 Echo. All rights reserved.
-        </div>
-    </footer>
+  <div class="footer-bottom">
+    © 2025 Echo. All rights reserved.
+  </div>
+</footer>
 </div>
 </body>
 </html>

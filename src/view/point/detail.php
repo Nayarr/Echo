@@ -1,22 +1,49 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détail du point</title>
-</head>
 <body>
     <div class="container">
         <div class="left-column">
             <div class="card detail-card">
                 <div class="detail">
                     <h1>Détail du point</h1> 
-                    <span class="id">ID <?= htmlspecialchars($idPoint ?? '1062420') ?></span>
+                    <span class="id">ID <?= htmlspecialchars($id_point) ?></span>
                 </div>
-                <p><span>Latitude</span> <?= htmlspecialchars($latitude ?? '-0.916664') ?>°</p>
-                <p><span>Longitude</span> <?= htmlspecialchars($longitude ?? '211.416687') ?>°</p>
-                <p><span>Dernière mesure :</span> <?= htmlspecialchars($derniereMesure ?? '2026-01-19') ?></p>
-            </div>
+                <p><span>Latitude</span> <?= htmlspecialchars($latitude) ?>°</p>
+                <p><span>Longitude</span> <?= htmlspecialchars($longitude) ?>°</p>
+                <p><span>Dernière mesure :</span> <?= htmlspecialchars($dateFinPeriode) ?></p>
+                <div class="period-selector">
+                    <p><span>Période d'observation</span></p>
+                    <form method="GET" action="<?= $baseURL ?>" class="date-range-form">
+                        <input type="hidden" name="controller" value="point">
+                        <input type="hidden" name="action" value="detail">
+                        <input type="hidden" name="id" value="<?= intval($id_point ?? 0) ?>">
+                        
+                        <div class="date-inputs">
+                            <div class="date-input-group">
+                                <input 
+                                    type="date" 
+                                    id="date_debut" 
+                                    name="date_debut" 
+                                    value="<?= htmlspecialchars($dateDebutPeriode ?? date('Y-m-d', strtotime('-1 month'))) ?>"
+                                    max="<?= date('Y-m-d') ?>"
+                                    required
+                                >
+                            </div>
+                            
+                            <div class="date-input-group">
+                                <input 
+                                    type="date" 
+                                    id="date_fin" 
+                                    name="date_fin" 
+                                    value="<?= htmlspecialchars($dateFinPeriode ?? date('Y-m-d')) ?>"
+                                    max="<?= date('Y-m-d') ?>"
+                                    required
+                                >
+                            </div>
+                            <button type="submit" class="btn-apply-period">Appliquer</button>
+                        </div>
+                    </form>
+                </div>
+    </div>
+
 
         <?php $nomsFrancaisVariables = [
                     'so' => 'Salinité',
@@ -102,7 +129,8 @@
                         <input type="hidden" name="controller" value="point">
                         <input type="hidden" name="action" value="exportCSV">
                         <input type="hidden" name="id" value="<?= intval($id_point ?? 0) ?>">
-                        <input type="hidden" name="years" value="<?= intval($nombreAnneesSelectionnees ?? 1) ?>">
+                        <input type="hidden" name="date_debut" value="<?= htmlspecialchars($dateDebutPeriode ?? date('Y-m-d', strtotime('-1 month'))) ?>">
+                        <input type="hidden" name="date_fin" value="<?= htmlspecialchars($dateFinPeriode ?? date('Y-m-d')) ?>">
                         <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s;">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -118,7 +146,8 @@
                         <input type="hidden" name="controller" value="point">
                         <input type="hidden" name="action" value="exportJSON">
                         <input type="hidden" name="id" value="<?= intval($id_point ?? 0) ?>">
-                        <input type="hidden" name="years" value="<?= intval($nombreAnneesSelectionnees ?? 1) ?>">
+                        <input type="hidden" name="date_debut" value="<?= htmlspecialchars($dateDebutPeriode ?? date('Y-m-d', strtotime('-1 month'))) ?>">
+                        <input type="hidden" name="date_fin" value="<?= htmlspecialchars($dateFinPeriode ?? date('Y-m-d')) ?>">
                         <button type="submit" style="padding: 10px 20px; background-color: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s;">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -311,5 +340,38 @@ const graphique = new Chart(contexte, {
             </div>
         </div>
     </div>
+
+    <script>
+function setQuickPeriod(days) {
+    const today = new Date();
+    const startDate = new Date();
+    startDate.setDate(today.getDate() - days);
+    
+    document.getElementById('date_fin').value = today.toISOString().split('T')[0];
+    document.getElementById('date_debut').value = startDate.toISOString().split('T')[0];
+    
+    // Soumettre automatiquement le formulaire
+    document.querySelector('.date-range-form').submit();
+}
+
+// Validation des dates
+document.getElementById('date_debut').addEventListener('change', function() {
+    const dateDebut = new Date(this.value);
+    const dateFin = new Date(document.getElementById('date_fin').value);
+    
+    if (dateDebut > dateFin) {
+        document.getElementById('date_fin').value = this.value;
+    }
+});
+
+document.getElementById('date_fin').addEventListener('change', function() {
+    const dateDebut = new Date(document.getElementById('date_debut').value);
+    const dateFin = new Date(this.value);
+    
+    if (dateFin < dateDebut) {
+        document.getElementById('date_debut').value = this.value;
+    }
+});
+</script>
+
 </body>
-</html>

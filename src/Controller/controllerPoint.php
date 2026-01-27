@@ -163,104 +163,106 @@ class controllerPoint
      * Page de détail d'un point avec analyses complètes
      */
     public static function detail(): void
-    {
-        $idPoint = intval($_GET['id'] ?? 0);
-        $nombreAnneesSelectionnees = intval($_GET['years'] ?? 1);
-        
-        // Valider le nombre d'années (entre 1 et 10)
-        if ($nombreAnneesSelectionnees < 1 || $nombreAnneesSelectionnees > 10) {
-            $nombreAnneesSelectionnees = 1;
-        }
+{
+    $idPoint = intval($_GET['id'] ?? 0);
+    
+    // MODIFICATION: Gérer les dates personnalisées
+    $dateFinPeriode = $_GET['date_fin'] ?? date('Y-m-d');
+    $dateDebutPeriode = $_GET['date_debut'] ?? date('Y-m-d', strtotime('-1 month'));
+    
+    // Valider les dates
+    if (strtotime($dateDebutPeriode) > strtotime($dateFinPeriode)) {
+        $temp = $dateDebutPeriode;
+        $dateDebutPeriode = $dateFinPeriode;
+        $dateFinPeriode = $temp;
+    }
+    
+    // Calculer le nombre de jours
+    $nombreJours = ceil((strtotime($dateFinPeriode) - strtotime($dateDebutPeriode)) / (60 * 60 * 24));
 
-        // Initialisation des variables pour la vue
-        $latitude = 0.0;
-        $longitude = 0.0;
-        $mesuresRecentes = [];
-        $moyennesAnnuelles = [];
-        $donneesAnnuelles = [];
-        $moyennesSaisonnieres = [];
-        $messageErreur = null;
-        $dateDebutPeriode = '';
-        $dateFinPeriode = '';
+    // Initialisation des variables pour la vue
+    $latitude = 0.0;
+    $longitude = 0.0;
+    $mesuresRecentes = [];
+    $moyennesAnnuelles = [];
+    $donneesAnnuelles = [];
+    $moyennesSaisonnieres = [];
+    $messageErreur = null;
 
-        if ($idPoint <= 0) {
-            $messageErreur = "ID de point invalide.";
-        } else {
-            try {
-                $depot = new PointRepository();
-                $objetPoint = $depot->select((string)$idPoint);
-                
-                if ($objetPoint === null) {
-                    $messageErreur = "Point non trouvé dans la base de données.";
+    if ($idPoint <= 0) {
+        $messageErreur = "ID de point invalide.";
+    } else {
+        try {
+            $depot = new PointRepository();
+            $objetPoint = $depot->select((string)$idPoint);
+            
+            if ($objetPoint === null) {
+                $messageErreur = "Point non trouvé dans la base de données.";
+            } else {
+                $latitude = $objetPoint->getLatitude();
+                $longitude = $objetPoint->getLongitude();
+
+                // 1. Récupérer les données du jour pour les valeurs récentes
+                $aujourdhui = date('Y-m-d');
+                $resultatJour = $depot->recupererDonneesCopernicus(
+                    $latitude,
+                    $longitude,
+                    $aujourdhui,
+                    $aujourdhui,
+                    'cmems_mod_glo_phy_anfc_0.083deg_PT1H-m',
+                    'so,thetao'
+                );
+
+                if ($resultatJour['succes']) {
+                    $mesuresRecentes = $depot->extraireDernieresMesures($resultatJour['donnees']);
+                }
+
+                // 2. Récupérer et analyser les données sur la période choisie
+                $analyse = $depot->obtenirAnalysePoint(
+                    $latitude,
+                    $longitude,
+                    $dateDebutPeriode,
+                    $dateFinPeriode
+                );
+
+                if ($analyse['succes']) {
+                    $moyennesAnnuelles = $analyse['statistiques'];
+                    $donneesAnnuelles = $analyse['donneesGraphique'];
+                    $moyennesSaisonnieres = $analyse['moyennesSaisonnieres'];
                 } else {
-                    $latitude = $objetPoint->getLatitude();
-                    $longitude = $objetPoint->getLongitude();
-
-                    // 1. Récupérer les données du jour pour les valeurs récentes
-                    $aujourdhui = date('Y-m-d');
-                    $resultatJour = $depot->recupererDonneesCopernicus(
-                        $latitude,
-                        $longitude,
-                        $aujourdhui,
-                        $aujourdhui,
-                        'cmems_mod_glo_phy_anfc_0.083deg_PT1H-m',
-                        'so,thetao'
-                    );
-
-                    if ($resultatJour['succes']) {
-                        $mesuresRecentes = $depot->extraireDernieresMesures($resultatJour['donnees']);
-                    }
-
-                    // 2. Récupérer et analyser les données sur X années
-                    $dateFinPeriode = date('Y-m-d');
-                    $dateDebutPeriode = date('Y-m-d', strtotime("-{$nombreAnneesSelectionnees} years"));
-                    
-                    // Utiliser la méthode façade pour tout récupérer en une fois
-                    $analyse = $depot->obtenirAnalysePoint(
-                        $latitude,
-                        $longitude,
-                        $dateDebutPeriode,
-                        $dateFinPeriode
-                    );
-
-                    if ($analyse['succes']) {
-                        $moyennesAnnuelles = $analyse['statistiques'];
-                        $donneesAnnuelles = $analyse['donneesGraphique'];
-                        $moyennesSaisonnieres = $analyse['moyennesSaisonnieres'];
-                    } else {
-                        // Si échec uniquement pour la période, on garde les mesures du jour
-                        if (empty($mesuresRecentes)) {
-                            $messageErreur = "Erreur lors de la récupération des données : " . $analyse['erreur'];
-                        }
+                    if (empty($mesuresRecentes)) {
+                        $messageErreur = "Erreur lors de la récupération des données : " . $analyse['erreur'];
                     }
                 }
-            } catch (\Throwable $exception) {
-                $messageErreur = "Erreur : " . $exception->getMessage();
-                
-                self::enregistrerErreur('detail', $exception, [
-                    'idPoint' => $idPoint,
-                    'nombreAnnees' => $nombreAnneesSelectionnees
-                ]);
             }
+        } catch (\Throwable $exception) {
+            $messageErreur = "Erreur : " . $exception->getMessage();
+            
+            self::enregistrerErreur('detail', $exception, [
+                'idPoint' => $idPoint,
+                'dateDebut' => $dateDebutPeriode,
+                'dateFin' => $dateFinPeriode
+            ]);
         }
-
-        // Afficher la vue avec toutes les données
-        self::afficheVue('point/view.php', [
-            'pagetitle' => 'Détail point',
-            'cheminVueBody' => 'detail.php',
-            'id_point' => $idPoint,
-            'latitude' => $latitude,
-            'longitude' => $longitude,
-            'mesuresRecentes' => $mesuresRecentes,
-            'moyennesAnnuelles' => $moyennesAnnuelles,
-            'donneesAnnuelles' => $donneesAnnuelles,
-            'moyennesSaisonnieres' => $moyennesSaisonnieres,
-            'nombreAnneesSelectionnees' => $nombreAnneesSelectionnees,
-            'dateDebutPeriode' => $dateDebutPeriode,
-            'dateFinPeriode' => $dateFinPeriode,
-            'messageErreur' => $messageErreur
-        ]);
     }
+
+    // Afficher la vue avec toutes les données
+    self::afficheVue('point/view.php', [
+        'pagetitle' => 'Détail point',
+        'cheminVueBody' => 'detail.php',
+        'id_point' => $idPoint,
+        'latitude' => $latitude,
+        'longitude' => $longitude,
+        'mesuresRecentes' => $mesuresRecentes,
+        'moyennesAnnuelles' => $moyennesAnnuelles,
+        'donneesAnnuelles' => $donneesAnnuelles,
+        'moyennesSaisonnieres' => $moyennesSaisonnieres,
+        'dateDebutPeriode' => $dateDebutPeriode,
+        'dateFinPeriode' => $dateFinPeriode,
+        'nombreJours' => $nombreJours,
+        'messageErreur' => $messageErreur
+    ]);
+}
 
     public static function rechercheParCoordonnees(): void
     {
@@ -296,16 +298,25 @@ class controllerPoint
     }
 
     /**
+ /**
  * Export des données au format CSV
  */
 public static function exportCSV(): void
 {
     $idPoint = intval($_GET['id'] ?? 0);
-    $nombreAnnees = intval($_GET['years'] ?? 1);
+    $dateDebut = $_GET['date_debut'] ?? date('Y-m-d', strtotime('-1 month'));
+    $dateFin = $_GET['date_fin'] ?? date('Y-m-d');
     
     if ($idPoint <= 0) {
         http_response_code(400);
         echo "ID invalide";
+        return;
+    }
+
+    // Valider les dates
+    if (strtotime($dateDebut) > strtotime($dateFin)) {
+        http_response_code(400);
+        echo "La date de début ne peut pas être après la date de fin";
         return;
     }
 
@@ -321,8 +332,6 @@ public static function exportCSV(): void
 
         $latitude = $objetPoint->getLatitude();
         $longitude = $objetPoint->getLongitude();
-        $dateDebut = date('Y-m-d', strtotime("-{$nombreAnnees} years"));
-        $dateFin = date('Y-m-d');
 
         $analyse = $depot->obtenirAnalysePoint($latitude, $longitude, $dateDebut, $dateFin);
 
@@ -359,70 +368,75 @@ public static function exportCSV(): void
     }
 }
 
-    /**
-     * Export des données au format JSON
-     */
-    public static function exportJSON(): void
-    {
-        $idPoint = intval($_GET['id'] ?? 0);
-        $nombreAnnees = intval($_GET['years'] ?? 1);
+/**
+ * Export des données au format JSON
+ */
+public static function exportJSON(): void
+{
+    $idPoint = intval($_GET['id'] ?? 0);
+    $dateDebut = $_GET['date_debut'] ?? date('Y-m-d', strtotime('-1 month'));
+    $dateFin = $_GET['date_fin'] ?? date('Y-m-d');
+    
+    if ($idPoint <= 0) {
+        http_response_code(400);
+        echo json_encode(["error" => "ID invalide"]);
+        return;
+    }
+
+    // Valider les dates
+    if (strtotime($dateDebut) > strtotime($dateFin)) {
+        http_response_code(400);
+        echo json_encode(["error" => "La date de début ne peut pas être après la date de fin"]);
+        return;
+    }
+
+    try {
+        $depot = new PointRepository();
+        $objetPoint = $depot->select((string)$idPoint);
         
-        if ($idPoint <= 0) {
-            http_response_code(400);
-            echo json_encode(["error" => "ID invalide"]);
+        if (!$objetPoint) {
+            http_response_code(404);
+            echo json_encode(["error" => "Point non trouvé"]);
             return;
         }
 
-        try {
-            $depot = new PointRepository();
-            $objetPoint = $depot->select((string)$idPoint);
-            
-            if (!$objetPoint) {
-                http_response_code(404);
-                echo json_encode(["error" => "Point non trouvé"]);
-                return;
-            }
+        $latitude = $objetPoint->getLatitude();
+        $longitude = $objetPoint->getLongitude();
 
-            $latitude = $objetPoint->getLatitude();
-            $longitude = $objetPoint->getLongitude();
-            $dateDebut = date('Y-m-d', strtotime("-{$nombreAnnees} years"));
-            $dateFin = date('Y-m-d');
+        $analyse = $depot->obtenirAnalysePoint($latitude, $longitude, $dateDebut, $dateFin);
 
-            $analyse = $depot->obtenirAnalysePoint($latitude, $longitude, $dateDebut, $dateFin);
-
-            if (!$analyse['succes']) {
-                http_response_code(500);
-                echo json_encode(["error" => "Erreur lors de la récupération des données"]);
-                return;
-            }
-
-            // Préparer les données JSON
-            $export = [
-                'metadata' => [
-                    'point_id' => $idPoint,
-                    'latitude' => $latitude,
-                    'longitude' => $longitude,
-                    'date_debut' => $dateDebut,
-                    'date_fin' => $dateFin,
-                    'export_date' => date('Y-m-d H:i:s')
-                ],
-                'statistiques' => $analyse['statistiques'],
-                'moyennes_saisonnieres' => $analyse['moyennesSaisonnieres'],
-                'donnees' => $analyse['donneesGraphique']
-            ];
-
-            header('Content-Type: application/json; charset=utf-8');
-            header('Content-Disposition: attachment; filename="point_' . $idPoint . '_' . $dateDebut . '_' . $dateFin . '.json"');
-            
-            echo json_encode($export, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            exit();
-
-        } catch (\Throwable $e) {
+        if (!$analyse['succes']) {
             http_response_code(500);
-            echo json_encode(["error" => $e->getMessage()]);
+            echo json_encode(["error" => "Erreur lors de la récupération des données"]);
+            return;
         }
-    }
 
+        // Préparer les données JSON
+        $export = [
+            'metadata' => [
+                'point_id' => $idPoint,
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'date_debut' => $dateDebut,
+                'date_fin' => $dateFin,
+                'export_date' => date('Y-m-d H:i:s')
+            ],
+            'statistiques' => $analyse['statistiques'],
+            'moyennes_saisonnieres' => $analyse['moyennesSaisonnieres'],
+            'donnees' => $analyse['donneesGraphique']
+        ];
+
+        header('Content-Type: application/json; charset=utf-8');
+        header('Content-Disposition: attachment; filename="point_' . $idPoint . '_' . $dateDebut . '_' . $dateFin . '.json"');
+        
+        echo json_encode($export, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        exit();
+
+    } catch (\Throwable $e) {
+        http_response_code(500);
+        echo json_encode(["error" => $e->getMessage()]);
+    }
+}
     /**
      * Méthode utilitaire pour logger les erreurs
      */

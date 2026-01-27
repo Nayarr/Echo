@@ -52,10 +52,11 @@ $factory = (new Factory)
 // ============================================================
 // 5. ROUTAGE 
 // ============================================================
-$controller = $_REQUEST['controller'] ?? 'point';
-$action     = $_REQUEST['action'] ?? 'accueil';
+// Récupérer controller et action depuis GET OU POST
+$controllerName = $_GET['controller'] ?? $_POST['controller'] ?? 'point';
+$action = $_GET['action'] ?? $_POST['action'] ?? 'accueil';
 
-$controllerClassName = "App\\SAE\\Controller\\controller" . ucfirst($controller);
+$controllerClassName = "App\\SAE\\Controller\\controller" . ucfirst($controllerName);
 
 if (class_exists($controllerClassName)) {
     $controllerInstance = new $controllerClassName($factory);

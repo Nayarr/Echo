@@ -1,4 +1,4 @@
-<div class="form-card">
+<div class="glass-panel form-card">
     <h2>Connexion</h2>
     
     <?php if (isset($error)): ?>
