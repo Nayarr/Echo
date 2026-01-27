@@ -923,8 +923,9 @@ table {
     border: 1px solid rgba(255, 255, 255);
     border-radius: var(--radius-pill);
     padding: 5px 15px;
+    margin: 5px;
     box-shadow: var(--shadow-float);
-    z-index: 1000;
+    z-index: 999;
 }
 
 .nav-box form{
