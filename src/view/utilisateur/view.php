@@ -16,10 +16,10 @@
             </a>
         </div>
 
-        <nav class="nav-links">
+       <nav class="nav-links">
             <a href="frontController.php?controller=point&action=carte">Carte</a>
-            <a href="#">Source</a> 
-            <a href="#">Equipe</a>    
+            <a href="frontController.php?controller=point&action=source">Source</a> 
+            <a href="frontController.php?controller=point&action=equipe">Equipe</a>    
         </nav>
 
         <div class="nav-actions">

@@ -76,6 +76,26 @@ class controllerPoint
     }
 
     /**
+     * Page d'equipe
+     */
+    public static function equipe(): void {
+        self::afficheVue('contenu/view.php', [
+            "pagetitle" => "Equipe",
+            "cheminVueBody" => "equipe.php"
+        ]);
+    }
+
+    /**
+     * Page de source
+     */
+    public static function source(): void {
+        self::afficheVue('contenu/view.php', [
+            "pagetitle" => "Sources",
+            "cheminVueBody" => "sources.php"
+        ]);
+    }
+
+    /**
      * API : Trouve le point le plus proche
      */
     public static function apiNearestPoint(): void

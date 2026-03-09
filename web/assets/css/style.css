@@ -1328,6 +1328,789 @@ main.carte-view #map{
             margin-top: 5px;
         }
 
+    /* =========================================
+   PAGE ÉQUIPE - GLASSMORPHISM STYLE
+   ========================================= */
+
+.team-page {
+    padding: 80px 20px 120px;
+    min-height: calc(100vh - 200px);
+}
+
+.team-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Titre principal */
+.team-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    margin: 0 0 12px 0;
+    letter-spacing: -0.5px;
+}
+
+.team-subtitle {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.75);
+    text-align: center;
+    margin: 0 0 60px 0;
+    font-weight: 400;
+}
+
+/* Grid des cartes */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); /* 6 colonnes pour faciliter le centrage */
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Les 3 premières cartes prennent 2 colonnes chacune (2+2+2 = 6) */
+.team-card:nth-child(1),
+.team-card:nth-child(2),
+.team-card:nth-child(3) {
+    grid-column: span 2;
+}
+
+/* Les 2 dernières cartes : 1 espace vide + 2 cols + 2 cols + 1 espace vide */
+.team-card:nth-child(4) {
+    grid-column: 2 / 4; /* Commence à la colonne 2, prend 2 colonnes */
+}
+
+.team-card:nth-child(5) {
+    grid-column: 4 / 6; /* Commence à la colonne 4, prend 2 colonnes */
+}
+
+/* Carte membre avec glassmorphism */
+.team-card {
+    background: linear-gradient(
+        135deg,
+        rgba(120, 130, 255, 0.22),
+        rgba(70, 60, 170, 0.18)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    
+    border-radius: 24px;
+    padding: 28px;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+}
+
+.team-card:hover {
+    transform: translateY(-8px);
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Photo membre */
+.team-photo {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin-bottom: 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.team-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.team-card:hover .team-photo img {
+    transform: scale(1.1);
+}
+
+/* Overlay gradient sur la photo */
+.photo-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.15),
+        rgba(139, 92, 246, 0.15)
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.team-card:hover .photo-overlay {
+    opacity: 1;
+}
+
+/* Infos membre */
+.team-info {
+    width: 100%;
+}
+
+.team-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.3px;
+}
+
+.team-role {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0 0 16px 0;
+    font-weight: 500;
+}
+
+/* Email link */
+.team-email {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    font-size: 13px;
+    
+    padding: 10px 16px;
+    border-radius: 50px;
+    
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    
+    transition: all 0.3s ease;
+}
+
+.team-email:hover {
+    background: rgba(59, 130, 246, 0.25);
+    border-color: rgba(59, 130, 246, 0.4);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.team-email svg {
+    flex-shrink: 0;
+    opacity: 0.8;
+}
+
+/* =========================================
+   PAGE SOURCES - GLASSMORPHISM STYLE
+   ========================================= */
+
+.sources-page {
+    padding: 80px 20px 120px;
+    min-height: calc(100vh - 200px);
+}
+
+.sources-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* =========================================
+   HEADER
+   ========================================= */
+.sources-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.sources-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 12px 0;
+    letter-spacing: -0.5px;
+}
+
+.sources-subtitle {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0;
+    font-weight: 400;
+}
+
+/* =========================================
+   SECTIONS
+   ========================================= */
+.sources-section {
+    margin-bottom: 60px;
+}
+
+.section-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 30px 0;
+    text-align: center;
+    letter-spacing: -0.3px;
+}
+
+/* =========================================
+   PANEL API (Grand panel)
+   ========================================= */
+.api-panel {
+    padding: 40px;
+}
+
+.api-content {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+.api-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.api-logo img {
+    width: 100%;
+    height: auto;
+    max-width: 160px;
+}
+
+.api-info h3 {
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 16px 0;
+}
+
+.api-description {
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0 0 24px 0;
+}
+
+.api-description strong {
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 600;
+}
+
+/* Détails API */
+.api-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+/* Lien API */
+.api-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    
+    padding: 12px 24px;
+    border-radius: 50px;
+    
+    background: rgba(59, 130, 246, 0.25);
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    
+    transition: all 0.3s ease;
+}
+
+.api-link:hover {
+    background: rgba(59, 130, 246, 0.35);
+    border-color: rgba(59, 130, 246, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.api-link svg {
+    flex-shrink: 0;
+}
+
+/* =========================================
+   TECH GRID (Langages & Librairies)
+   ========================================= */
+.tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+}
+
+.tech-card {
+    padding: 28px 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    justify-content: space-between;
+}
+
+.tech-card:hover {
+    transform: translateY(-6px);
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Icône tech */
+.tech-icon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    transition: all 0.3s ease;
+}
+
+.tech-card:hover .tech-icon {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
+    transform: scale(1.05);
+}
+
+.tech-icon img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+/* Texte tech */
+.tech-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 8px 0;
+}
+
+.tech-description {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+}
+
+.tech-version {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+    
+    padding: 4px 12px;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* =========================================
+   SECTION UNIVERSITAIRE
+   ========================================= */
+.university-section {
+    margin-top: 80px;
+}
+
+.university-panel {
+    padding: 50px 40px;
+    text-align: center;
+    
+    background: linear-gradient(
+        135deg,
+        rgba(139, 92, 246, 0.15),
+        rgba(59, 130, 246, 0.15)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.university-badge {
+    font-size: 64px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+.university-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 16px 0;
+}
+
+.university-text {
+    font-size: 17px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 800px;
+    margin: 0 auto 32px;
+}
+
+.university-text strong {
+    color: white;
+    font-weight: 600;
+}
+
+/* Détails université */
+.university-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 700px;
+    margin: 0 auto 32px;
+}
+
+.university-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+    
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.university-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.university-value {
+    font-size: 15px;
+    color: white;
+    font-weight: 500;
+}
+
+/* Logo université */
+.university-logo {
+    margin-top: 32px;
+}
+
+.university-logo img {
+    max-width: 200px;
+    height: auto;
+    opacity: 0.9;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+/* Tablette */
+@media (max-width: 1024px) {
+    .api-content {
+        grid-template-columns: 150px 1fr;
+        gap: 30px;
+    }
+    
+    .api-logo {
+        padding: 16px;
+    }
+    
+    .tech-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .sources-page {
+        padding: 60px 15px 80px;
+    }
+    
+    .sources-title {
+        font-size: 36px;
+    }
+    
+    .sources-subtitle {
+        font-size: 16px;
+    }
+    
+    .section-title {
+        font-size: 26px;
+        margin-bottom: 24px;
+    }
+    
+    /* API Panel */
+    .api-panel {
+        padding: 28px 20px;
+    }
+    
+    .api-content {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .api-logo {
+        max-width: 200px;
+        margin: 0 auto;
+    }
+    
+    .api-info h3 {
+        font-size: 24px;
+        text-align: center;
+    }
+    
+    .api-description {
+        font-size: 15px;
+        text-align: center;
+    }
+    
+    .api-details {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .api-link {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    /* Tech Grid */
+    .tech-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    
+    .tech-card {
+        padding: 20px 16px;
+    }
+    
+    .tech-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 14px;
+    }
+    
+    .tech-icon img {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .tech-name {
+        font-size: 16px;
+    }
+    
+    .tech-description {
+        font-size: 12px;
+    }
+    
+    .tech-version {
+        font-size: 11px;
+        padding: 3px 10px;
+    }
+    
+    /* Université */
+    .university-panel {
+        padding: 36px 24px;
+    }
+    
+    .university-badge {
+        font-size: 48px;
+    }
+    
+    .university-title {
+        font-size: 28px;
+    }
+    
+    .university-text {
+        font-size: 15px;
+    }
+    
+    .university-info {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .university-detail {
+        padding: 12px;
+    }
+    
+    .university-logo img {
+        max-width: 160px;
+    }
+}
+
+/* Petit mobile */
+@media (max-width: 480px) {
+    .sources-title {
+        font-size: 32px;
+    }
+    
+    .section-title {
+        font-size: 24px;
+    }
+    
+    .tech-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+    
+    .api-panel {
+        padding: 24px 16px;
+    }
+    
+    .university-panel {
+        padding: 32px 20px;
+    }
+    
+    .university-title {
+        font-size: 24px;
+    }
+    
+    .university-text {
+        font-size: 14px;
+    }
+}
+
+/* =========================================
+   RESPONSIVE - PAGE ÉQUIPE
+   ========================================= */
+
+/* Tablette */
+@media (max-width: 1024px) {
+    .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .team-page {
+        padding: 60px 15px 80px;
+    }
+    
+    .team-title {
+        font-size: 36px;
+        margin-bottom: 10px;
+    }
+    
+    .team-subtitle {
+        font-size: 16px;
+        margin-bottom: 40px;
+    }
+    
+    .team-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        max-width: 400px;
+    }
+    
+    .team-card {
+        padding: 24px;
+    }
+    
+    .team-photo {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 16px;
+    }
+    
+    .team-name {
+        font-size: 20px;
+    }
+    
+    .team-email {
+        font-size: 12px;
+        padding: 8px 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+}
+
+/* Petit mobile */
+@media (max-width: 480px) {
+    .team-title {
+        font-size: 32px;
+    }
+    
+    .team-subtitle {
+        font-size: 15px;
+        margin-bottom: 35px;
+    }
+    
+    .team-card {
+        padding: 20px;
+    }
+    
+    .team-photo {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .team-name {
+        font-size: 18px;
+    }
+    
+    .team-role {
+        font-size: 13px;
+        margin-bottom: 14px;
+    }
+    
+    .team-email {
+        font-size: 11px;
+        padding: 8px 12px;
+    }
+}
+
         /* =========================================
    RESPONSIVE CSS POUR LA PAGE DÉTAIL
    Conserve le design existant sur desktop
